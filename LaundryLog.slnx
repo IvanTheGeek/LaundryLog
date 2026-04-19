@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="src/LaundryLog/LaundryLog.fsproj" />
+  <Project Path="tests/LaundryLog.Tests/LaundryLog.Tests.fsproj" />
+</Solution>
