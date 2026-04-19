@@ -37,13 +37,19 @@ let formatDetail (data: LaundryExpenseLogged) =
 
 // ─── SetLocation ──────────────────────────────────────────────────────────────
 
+let private isAllowedLocationChar (c: char) =
+    Char.IsAsciiLetterOrDigit c
+    || c = ' ' || c = '-' || c = '\'' || c = '.' || c = ',' || c = '&' || c = '#'
+
 let setLocationHandler : CommandHandler<LaundryLocationCaptured, SetLocationCommand, LaundryLocationCaptured> =
     fun _given cmd ->
         let loc = cmd.Data.Location.Trim()
-        if loc.Length > 0 then
-            Ok [ { Name = "LaundryLocationCaptured"; OccurredAt = DateTimeOffset.UtcNow; Data = { Location = loc } } ]
-        else
+        if loc.Length = 0 then
             Error "Location must not be empty"
+        elif loc |> Seq.exists (isAllowedLocationChar >> not) then
+            Error "Location may contain only ASCII letters, digits, space, hyphen, apostrophe, dot, comma, ampersand, and hash"
+        else
+            Ok [ { Name = "LaundryLocationCaptured"; OccurredAt = DateTimeOffset.UtcNow; Data = { Location = loc } } ]
 
 // ─── LogExpense ───────────────────────────────────────────────────────────────
 
