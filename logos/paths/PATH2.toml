@@ -1,0 +1,59 @@
+id          = "PATH2"
+name        = "Continue Session — Location Set — Dryer Entry"
+status      = "Specified"
+actor       = "Human of Driver"
+goal        = "Log a dryer expense during an active session where location is already set"
+chains_from = "PATH1"
+
+concern_layers = [
+  "RuntimeOrchestration",
+  "Business",
+]
+
+# ---------------------------------------------------------------------------
+# Example data — canonical values for this PATH.
+# PATH1 example data is the ambient Given context (location already captured,
+# washer entry already logged). This PATH adds the dryer entry.
+# ---------------------------------------------------------------------------
+
+[example_data]
+location      = "Love's #123 - Springfield, OH"
+machine_type  = "Dryer"
+quantity      = 1
+unit_price    = 2.50
+line_total    = 2.50
+payment       = "Cash"
+detail_line   = "1 Dryer @ $2.50 • Cash"
+session_total = 5.50   # PATH1 washer $3.00 + PATH2 dryer $2.50
+
+# ---------------------------------------------------------------------------
+# Slice sequence — ordered steps this PATH traverses.
+# ApplicationLifecycle is absent: app is already running from PATH1.
+# ---------------------------------------------------------------------------
+
+[[slices]]
+order   = 1
+name    = "RouteResolved"
+kind    = "Event"
+concern = "RuntimeOrchestration"
+route   = "EntryForm"
+note    = "Location already set from PATH1. Runtime resolves directly to EntryForm — no location prompt."
+
+[[slices]]
+order   = 2
+name    = "LogExpense"
+kind    = "CommandSlice"
+command = "LogExpense"
+event   = "LaundryExpenseLogged"
+concern = "Business"
+spec    = "logos/slices/log-expense.md"
+note    = "Dryer entry. Same handler as PATH1 — different machine type and unit price."
+
+[[slices]]
+order   = 3
+name    = "RecentExpenses"
+kind    = "ViewSlice"
+view    = "RecentExpenses"
+concern = "Business"
+spec    = "logos/slices/recent-expenses.md"
+note    = "Two entries within 3-hour window. Newest first. Session total = $3.00 (washer) + $2.50 (dryer) = $5.50."

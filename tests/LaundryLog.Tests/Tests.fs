@@ -11,7 +11,25 @@ open LaundryLog.Slices
 
 let T = DateTimeOffset(2025, 6, 1, 14, 0, 0, TimeSpan.Zero)
 
-// ─── SetLocation ──────────────────────────────────────────────────────────────
+// ─── Shared fixtures ──────────────────────────────────────────────────────────
+
+let locationEvent =
+    { Name       = "LaundryLocationCaptured"
+      OccurredAt = DateTimeOffset.MinValue
+      Data       = { Location = "Love's #123 - Springfield, OH" } }
+
+let expenseEvent (mt: MachineType) (qty: int option) (price: decimal option) (total: decimal) (pm: PaymentMethod) (at: DateTimeOffset) =
+    { Name       = "LaundryExpenseLogged"
+      OccurredAt = at
+      Data       = { Location    = "Love's #123 - Springfield, OH"
+                     MachineType = mt
+                     Quantity    = qty
+                     UnitPrice   = price
+                     LineTotal   = total
+                     Payment     = pm
+                     Note        = None } }
+
+// ─── PATH1 — Fresh Launch — No Location — First Entry ─────────────────────────
 
 let setLocationSlice : CommandSlice<Actor, LaundryLocationCaptured, SetLocationCommand, LaundryLocationCaptured> =
     { Actor   = driver
@@ -20,18 +38,10 @@ let setLocationSlice : CommandSlice<Actor, LaundryLocationCaptured, SetLocationC
       GWT =
         { Given = []
           When  = { Name = "SetLocation"; IssuedBy = driver; Data = { Location = "Love's #123 - Springfield, OH" } }
-          Then  = [ { Name = "LaundryLocationCaptured"
+          Then  = [ { Name       = "LaundryLocationCaptured"
                       OccurredAt = DateTimeOffset.MinValue
                       Data       = { Location = "Love's #123 - Springfield, OH" } } ] } }
 
-// ─── LogExpense ───────────────────────────────────────────────────────────────
-
-let locationEvent =
-    { Name       = "LaundryLocationCaptured"
-      OccurredAt = DateTimeOffset.MinValue
-      Data       = { Location = "Love's #123 - Springfield, OH" } }
-
-// PATH1 — single washer, cash
 let logExpenseSlicePath1 : CommandSlice<Actor, LaundryLocationCaptured, LogExpenseCommand, LaundryExpenseLogged> =
     let cmd = { MachineType = Washer; Quantity = Some 1; UnitPrice = Some 3.00M; Amount = None; Payment = Cash; Note = None }
     { Actor   = driver
@@ -50,7 +60,64 @@ let logExpenseSlicePath1 : CommandSlice<Actor, LaundryLocationCaptured, LogExpen
                                      Payment     = Cash
                                      Note        = None } } ] } }
 
-// Multiple washers, named card
+let recentExpensesSlicePath1 : ViewSlice<LaundryExpenseLogged, RecentExpensesCriteria, RecentExpensesView, Actor> =
+    let ev = expenseEvent Washer (Some 1) (Some 3.00M) 3.00M Cash T
+    { Events  = []
+      View    = { Name = "RecentExpenses"; Data = { SessionTotal = 0M; Entries = [] } }
+      Handler = recentExpensesHandler
+      GWT =
+        { Given = [ ev ]
+          When  = { QueryTime = T.AddMinutes(30.0) }
+          Then  = { Name = "RecentExpenses"
+                    Data = { SessionTotal = 3.00M
+                             Entries = [ { LineTotal  = 3.00M
+                                           Detail     = "1 Washer @ $3.00 • Cash"
+                                           OccurredAt = T } ] } } }
+      Actor   = driver }
+
+// ─── PATH2 — Continue Session — Location Set — Dryer Entry ────────────────────
+// Chains from PATH1. Given context: location already captured, washer already logged.
+
+let logExpenseSlicePath2 : CommandSlice<Actor, LaundryLocationCaptured, LogExpenseCommand, LaundryExpenseLogged> =
+    let cmd = { MachineType = Dryer; Quantity = Some 1; UnitPrice = Some 2.50M; Amount = None; Payment = Cash; Note = None }
+    { Actor   = driver
+      Command = { Name = "LogExpense"; IssuedBy = driver; Data = cmd }
+      Handler = logExpenseHandler
+      GWT =
+        { Given = [ locationEvent ]
+          When  = { Name = "LogExpense"; IssuedBy = driver; Data = cmd }
+          Then  = [ { Name       = "LaundryExpenseLogged"
+                      OccurredAt = DateTimeOffset.MinValue
+                      Data       = { Location    = "Love's #123 - Springfield, OH"
+                                     MachineType = Dryer
+                                     Quantity    = Some 1
+                                     UnitPrice   = Some 2.50M
+                                     LineTotal   = 2.50M
+                                     Payment     = Cash
+                                     Note        = None } } ] } }
+
+// Washer ($3.00) at T, Dryer ($2.50) at T+30min — session total $5.50, newest first
+let recentExpensesSlicePath2 : ViewSlice<LaundryExpenseLogged, RecentExpensesCriteria, RecentExpensesView, Actor> =
+    let evWasher = expenseEvent Washer (Some 1) (Some 3.00M) 3.00M Cash T
+    let evDryer  = expenseEvent Dryer  (Some 1) (Some 2.50M) 2.50M Cash (T.AddMinutes(30.0))
+    { Events  = []
+      View    = { Name = "RecentExpenses"; Data = { SessionTotal = 0M; Entries = [] } }
+      Handler = recentExpensesHandler
+      GWT =
+        { Given = [ evWasher; evDryer ]
+          When  = { QueryTime = T.AddMinutes(60.0) }
+          Then  = { Name = "RecentExpenses"
+                    Data = { SessionTotal = 5.50M
+                             Entries = [ { LineTotal  = 2.50M
+                                           Detail     = "1 Dryer @ $2.50 • Cash"
+                                           OccurredAt = T.AddMinutes(30.0) }
+                                         { LineTotal  = 3.00M
+                                           Detail     = "1 Washer @ $3.00 • Cash"
+                                           OccurredAt = T } ] } } }
+      Actor   = driver }
+
+// ─── Additional GWT cases — slice spec coverage beyond PATH1 and PATH2 ────────
+
 let logExpenseSliceCard : CommandSlice<Actor, LaundryLocationCaptured, LogExpenseCommand, LaundryExpenseLogged> =
     let cmd = { MachineType = Washer; Quantity = Some 2; UnitPrice = Some 3.75M; Amount = None; Payment = Card "Business SPARK"; Note = None }
     { Actor   = driver
@@ -69,7 +136,6 @@ let logExpenseSliceCard : CommandSlice<Actor, LaundryLocationCaptured, LogExpens
                                      Payment     = Card "Business SPARK"
                                      Note        = None } } ] } }
 
-// Supplies — amount only, no quantity
 let logExpenseSliceSupplies : CommandSlice<Actor, LaundryLocationCaptured, LogExpenseCommand, LaundryExpenseLogged> =
     let cmd = { MachineType = Supplies; Quantity = None; UnitPrice = None; Amount = Some 2.50M; Payment = Cash; Note = Some "bleach packet" }
     { Actor   = driver
@@ -88,36 +154,7 @@ let logExpenseSliceSupplies : CommandSlice<Actor, LaundryLocationCaptured, LogEx
                                      Payment     = Cash
                                      Note        = Some "bleach packet" } } ] } }
 
-// ─── RecentExpenses ───────────────────────────────────────────────────────────
-
-let expenseEvent (mt: MachineType) (qty: int option) (price: decimal option) (total: decimal) (pm: PaymentMethod) (at: DateTimeOffset) =
-    { Name       = "LaundryExpenseLogged"
-      OccurredAt = at
-      Data       = { Location    = "Love's #123 - Springfield, OH"
-                     MachineType = mt
-                     Quantity    = qty
-                     UnitPrice   = price
-                     LineTotal   = total
-                     Payment     = pm
-                     Note        = None } }
-
-// PATH1 — one entry in session
-let recentExpensesSlicePath1 : ViewSlice<LaundryExpenseLogged, RecentExpensesCriteria, RecentExpensesView, Actor> =
-    let ev = expenseEvent Washer (Some 1) (Some 3.00M) 3.00M Cash T
-    { Events  = []
-      View    = { Name = "RecentExpenses"; Data = { SessionTotal = 0M; Entries = [] } }
-      Handler = recentExpensesHandler
-      GWT =
-        { Given = [ ev ]
-          When  = { QueryTime = T.AddMinutes(30.0) }
-          Then  = { Name = "RecentExpenses"
-                    Data = { SessionTotal = 3.00M
-                             Entries = [ { LineTotal  = 3.00M
-                                           Detail     = "1 Washer @ $3.00 • Cash"
-                                           OccurredAt = T } ] } } }
-      Actor   = driver }
-
-// Two entries in same session — newest first
+// Two entries per spec — 2×Washer + 2×Dryer, card payment, 65 minutes apart
 let recentExpensesSliceTwoEntries : ViewSlice<LaundryExpenseLogged, RecentExpensesCriteria, RecentExpensesView, Actor> =
     let ev1 = expenseEvent Washer (Some 2) (Some 3.75M) 7.50M (Card "Business SPARK") T
     let ev2 = expenseEvent Dryer  (Some 2) (Some 2.50M) 5.00M (Card "Business SPARK") (T.AddHours(1.0))
@@ -154,21 +191,27 @@ let recentExpensesSliceGap : ViewSlice<LaundryExpenseLogged, RecentExpensesCrite
                                            OccurredAt = T.AddHours(4.0) } ] } } }
       Actor   = driver }
 
-// ─── All tests ────────────────────────────────────────────────────────────────
+// ─── Test suite — organized by PATH ───────────────────────────────────────────
 
 let allTests =
     testList "LaundryLog" [
-        testList "SetLocation" [
-            commandSliceToTest "PATH1 — fresh install, free-form location" setLocationSlice
+
+        testList "PATH1 — Fresh Launch — No Location — First Entry" [
+            commandSliceToTest "SetLocation — fresh install, free-form location" setLocationSlice
+            commandSliceToTest "LogExpense — single washer, cash"               logExpenseSlicePath1
+            viewSliceToTest   "RecentExpenses — one entry in session"           recentExpensesSlicePath1
         ]
-        testList "LogExpense" [
-            commandSliceToTest "PATH1 — single washer, cash"           logExpenseSlicePath1
-            commandSliceToTest "multiple washers, named card"          logExpenseSliceCard
-            commandSliceToTest "supplies with note, cash"              logExpenseSliceSupplies
+
+        testList "PATH2 — Continue Session — Location Set — Dryer Entry" [
+            commandSliceToTest "LogExpense — single dryer, cash"                          logExpenseSlicePath2
+            viewSliceToTest   "RecentExpenses — washer + dryer, session total $5.50"     recentExpensesSlicePath2
         ]
-        testList "RecentExpenses" [
-            viewSliceToTest "PATH1 — one entry in session"             recentExpensesSlicePath1
-            viewSliceToTest "two entries in same session, newest first" recentExpensesSliceTwoEntries
-            viewSliceToTest "gap exceeds 3h — new session begins"      recentExpensesSliceGap
+
+        testList "Slice spec coverage — additional GWT cases" [
+            commandSliceToTest "LogExpense — multiple washers, named card"                logExpenseSliceCard
+            commandSliceToTest "LogExpense — supplies with note, cash"                   logExpenseSliceSupplies
+            viewSliceToTest   "RecentExpenses — two entries per spec (2×Washer+2×Dryer)" recentExpensesSliceTwoEntries
+            viewSliceToTest   "RecentExpenses — gap exceeds 3h, new session begins"      recentExpensesSliceGap
         ]
+
     ]
