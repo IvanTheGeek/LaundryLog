@@ -1,0 +1,12 @@
+# .NET
+[Bb]in/
+[Oo]bj/
+artifacts/
+*.user
+.vs/
+.idea/
+.ionide/
+
+# OS
+.DS_Store
+Thumbs.db

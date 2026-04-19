@@ -1,0 +1,74 @@
+id     = "PATH1"
+name   = "Fresh Launch — No Location — First Entry"
+status = "Specified"
+actor  = "Human of Driver"
+goal   = "Log the first laundry expense on a fresh install with no prior data"
+
+concern_layers = [
+  "ApplicationLifecycle",
+  "RuntimeOrchestration",
+  "Business",
+]
+
+# ---------------------------------------------------------------------------
+# Example data — canonical values that flow through every slice in this PATH.
+# All downstream GWT test cases derive from this block. Do not invent data
+# elsewhere — define a PATH and put it here.
+# ---------------------------------------------------------------------------
+
+[example_data]
+location     = "Love's #123 - Springfield, OH"
+machine_type = "Washer"
+quantity     = 1
+unit_price   = 3.00
+line_total   = 3.00
+payment      = "Cash"
+detail_line  = "1 Washer @ $3.00 • Cash"
+
+# ---------------------------------------------------------------------------
+# Slice sequence — ordered steps this PATH traverses.
+# Lifecycle/runtime slices have no GWT spec (no command handler to assert).
+# Business slices link to their GWT spec in logos/slices/.
+# ---------------------------------------------------------------------------
+
+[[slices]]
+order   = 1
+name    = "AppStarted"
+kind    = "Event"
+concern = "ApplicationLifecycle"
+note    = "Driver taps app icon. Splash screen appears immediately. No runtime checks complete yet."
+
+[[slices]]
+order   = 2
+name    = "RouteResolved"
+kind    = "Event"
+concern = "RuntimeOrchestration"
+route   = "NeedLocation"
+note    = "Runtime checks complete. No prior session, no saved location, no pending draft found. Route resolves to NeedLocation screen."
+
+[[slices]]
+order   = 3
+name    = "SetLocation"
+kind    = "CommandSlice"
+command = "SetLocation"
+event   = "LaundryLocationCaptured"
+concern = "Business"
+spec    = "logos/slices/set-location.md"
+
+[[slices]]
+order   = 4
+name    = "LogExpense"
+kind    = "CommandSlice"
+command = "LogExpense"
+event   = "LaundryExpenseLogged"
+concern = "Business"
+spec    = "logos/slices/log-expense.md"
+
+[[slices]]
+order   = 5
+name    = "RecentExpenses"
+kind    = "ViewSlice"
+view    = "RecentExpenses"
+concern = "Business"
+spec    = "logos/slices/recent-expenses.md"
+note    = "Shows expenses where no gap between consecutive entries exceeds 3 hours. Session is a UI concept — not stored."
