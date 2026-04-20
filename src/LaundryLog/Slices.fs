@@ -1,7 +1,7 @@
 module LaundryLog.Slices
 
 open System
-open EventModeling
+open Nexus.Modeling
 open LaundryLog
 
 // ─── Actors ───────────────────────────────────────────────────────────────────

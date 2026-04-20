@@ -12,7 +12,7 @@
     <Compile Include="Service.fs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../../../NEXUS-EventModeling/EventModeling/EventModeling.fsproj" />
+    <ProjectReference Include="../../../NEXUS-Modeling/Modeling/Modeling.fsproj" />
     <ProjectReference Include="../../../NEXUS-STRATUM/src/NEXUS-STRATUM/NEXUS-STRATUM.fsproj" />
   </ItemGroup>
 </Project>

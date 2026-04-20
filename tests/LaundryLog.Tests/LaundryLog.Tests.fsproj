@@ -13,7 +13,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/LaundryLog/LaundryLog.fsproj" />
-    <ProjectReference Include="../../../NEXUS-EventModeling/EventModeling.Testing/EventModeling.Testing.fsproj" />
+    <ProjectReference Include="../../../NEXUS-Modeling/Modeling.Testing/Modeling.Testing.fsproj" />
     <PackageReference Include="Expecto" Version="10.*" />
   </ItemGroup>
 </Project>

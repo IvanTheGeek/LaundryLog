@@ -2,8 +2,8 @@ module LaundryLog.Tests.Tests
 
 open System
 open Expecto
-open EventModeling
-open EventModeling.Testing.Assert
+open Nexus.Modeling
+open Nexus.Modeling.Testing.Assert
 open LaundryLog
 open LaundryLog.Slices
 

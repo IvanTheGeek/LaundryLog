@@ -1,35 +1,14 @@
 module LaundryLog.Service
-#nowarn "3261" // Deserialize<'T> returns 'T|null in .NET 10 nullable mode; data we write cannot be null
 
 open System
-open System.Text.Json
-open EventModeling
+open System.Globalization
+open System.Text
+open Nexus.Modeling
 open LaundryLog
 open LaundryLog.Slices
 open Stratum
 
-// ─── Storage DTOs ─────────────────────────────────────────────────────────────
-// Flat records with only primitives and Nullable<T> — System.Text.Json native.
-// F# discriminated unions and option types are mapped explicitly at the boundary.
-
-[<CLIMutable>]
-type LocationCapturedDto = {
-    Location : string
-}
-
-[<CLIMutable>]
-type ExpenseLoggedDto = {
-    Location     : string
-    MachineType  : string            // "Washer" | "Dryer" | "Supplies"
-    Quantity     : Nullable<int>
-    UnitPrice    : Nullable<decimal>
-    LineTotal    : decimal
-    PaymentKind  : string            // "Cash" | "Card" | "App" | "Points"
-    PaymentName  : string            // empty string when not applicable
-    Note         : string            // empty string when not applicable
-}
-
-// ─── Domain ↔ DTO mapping ─────────────────────────────────────────────────────
+// ─── Domain ↔ string mappings ────────────────────────────────────────────────
 
 let private machineTypeToString = function
     | Washer   -> "Washer"
@@ -42,52 +21,87 @@ let private machineTypeFromString = function
     | "Supplies" -> Supplies
     | s          -> failwith $"Unknown MachineType: {s}"
 
-let private paymentToDto (pm: PaymentMethod) =
+let private paymentToStrings (pm: PaymentMethod) =
     match pm with
-    | Cash          -> "Cash",   ""
-    | Card   name   -> "Card",   name
-    | App    name   -> "App",    name
-    | Points name   -> "Points", name
+    | Cash        -> "Cash",   ""
+    | Card   name -> "Card",   name
+    | App    name -> "App",    name
+    | Points name -> "Points", name
 
-let private paymentFromDto (kind: string) (name: string) =
+let private paymentFromStrings (kind: string) (name: string) =
     match kind with
     | "Cash"   -> Cash
     | "Card"   -> Card   name
     | "App"    -> App    name
     | "Points" -> Points name
-    | s        -> failwith $"Unknown PaymentKind: {s}"
+    | s        -> failwith $"Unknown Payment: {s}"
 
-let private expenseToDto (e: LaundryExpenseLogged) : ExpenseLoggedDto =
-    let kind, name = paymentToDto e.Payment
-    { Location     = e.Location
-      MachineType  = machineTypeToString e.MachineType
-      Quantity     = e.Quantity  |> Option.map Nullable |> Option.defaultValue (Nullable())
-      UnitPrice    = e.UnitPrice |> Option.map Nullable |> Option.defaultValue (Nullable())
-      LineTotal    = e.LineTotal
-      PaymentKind  = kind
-      PaymentName  = name
-      Note         = e.Note |> Option.defaultValue "" }
+// ─── TOML helpers ─────────────────────────────────────────────────────────────
 
-let private dtoToExpense (dto: ExpenseLoggedDto) : LaundryExpenseLogged =
-    { Location    = dto.Location
-      MachineType = machineTypeFromString dto.MachineType
-      Quantity    = if dto.Quantity.HasValue    then Some dto.Quantity.Value    else None
-      UnitPrice   = if dto.UnitPrice.HasValue   then Some dto.UnitPrice.Value   else None
-      LineTotal   = dto.LineTotal
-      Payment     = paymentFromDto dto.PaymentKind dto.PaymentName
-      Note        = if String.IsNullOrEmpty dto.Note then None else Some dto.Note }
+// Escape backslash and double-quote for TOML basic strings.
+let private tomlStr (s: string) =
+    let escaped = s.Replace("\\", "\\\\").Replace("\"", "\\\"")
+    $"\"{escaped}\""
+
+let private decToStr (d: decimal) = d.ToString(CultureInfo.InvariantCulture)
+let private parseDec (s: string)  = Decimal.Parse(s, CultureInfo.InvariantCulture)
+
+// Parse a flat TOML document into a string map.
+// Handles basic strings (quoted) and unquoted values (integers).
+// Skips blank lines, comments, and section headers.
+let private parseToml (text: string) : Map<string, string> =
+    text.Split([| '\n'; '\r' |], StringSplitOptions.RemoveEmptyEntries)
+    |> Array.choose (fun line ->
+        let line = line.Trim()
+        if line = "" || line.StartsWith('#') || line.StartsWith('[') then None
+        else
+            let eq = line.IndexOf(" = ")
+            if eq = -1 then None
+            else
+                let key = line.[..eq - 1].Trim()
+                let raw = line.[eq + 3..].Trim()
+                let value =
+                    if raw.StartsWith('"') && raw.EndsWith('"') && raw.Length >= 2 then
+                        raw.[1..raw.Length - 2]
+                            .Replace("\\\"", "\"")
+                            .Replace("\\\\", "\\")
+                    else raw
+                Some (key, value))
+    |> Map.ofArray
 
 // ─── Serialization ────────────────────────────────────────────────────────────
 
-let private toBytes<'T> (value: 'T) : byte[] =
-    JsonSerializer.SerializeToUtf8Bytes<'T>(value)
+let private locationToBytes (e: LaundryLocationCaptured) : byte[] =
+    Encoding.UTF8.GetBytes($"Location = {tomlStr e.Location}\n")
 
-let private fromBytes<'T> (bytes: byte[]) : 'T =
-    JsonSerializer.Deserialize<'T>(ReadOnlySpan(bytes))
+let private locationFromBytes (bytes: byte[]) : LaundryLocationCaptured =
+    let m = parseToml (Encoding.UTF8.GetString bytes)
+    { Location = m["Location"] }
+
+let private expenseToBytes (e: LaundryExpenseLogged) : byte[] =
+    let lines = ResizeArray<string>()
+    lines.Add $"Location    = {tomlStr e.Location}"
+    lines.Add $"MachineType = {tomlStr (machineTypeToString e.MachineType)}"
+    e.Quantity  |> Option.iter (fun q -> lines.Add $"Quantity    = {q}")
+    e.UnitPrice |> Option.iter (fun p -> lines.Add $"UnitPrice   = {tomlStr (decToStr p)}")
+    lines.Add $"LineTotal   = {tomlStr (decToStr e.LineTotal)}"
+    let kind, name = paymentToStrings e.Payment
+    lines.Add $"Payment     = {tomlStr kind}"
+    if name <> "" then lines.Add $"PaymentName = {tomlStr name}"
+    e.Note |> Option.iter (fun n -> lines.Add $"Note        = {tomlStr n}")
+    Encoding.UTF8.GetBytes(String.concat "\n" lines + "\n")
+
+let private expenseFromBytes (bytes: byte[]) : LaundryExpenseLogged =
+    let m = parseToml (Encoding.UTF8.GetString bytes)
+    { Location    = m["Location"]
+      MachineType = machineTypeFromString m["MachineType"]
+      Quantity    = Map.tryFind "Quantity"    m |> Option.map int
+      UnitPrice   = Map.tryFind "UnitPrice"   m |> Option.map parseDec
+      LineTotal   = parseDec m["LineTotal"]
+      Payment     = paymentFromStrings m["Payment"] (Map.tryFind "PaymentName" m |> Option.defaultValue "")
+      Note        = Map.tryFind "Note" m }
 
 // ─── Stream identity ──────────────────────────────────────────────────────────
-// All events for the local (single-device) driver live in one stream.
-// Pass a different StreamId when multi-driver or multi-device is needed.
 
 let localStream = StreamId "laundrylog:local"
 
@@ -97,24 +111,22 @@ let private readLocations (store: IEventStore) (stream: StreamId) = async {
     let! stored = store.Read stream Start
     return
         stored
-        |> List.filter  (fun e -> e.EventType = "LaundryLocationCaptured")
-        |> List.map     (fun e ->
-            let dto = fromBytes<LocationCapturedDto> e.Data
+        |> List.filter (fun e -> e.EventType = "LaundryLocationCaptured")
+        |> List.map    (fun e ->
             { Name       = e.EventType
               OccurredAt = e.OccurredAt
-              Data       = ({ Location = dto.Location } : LaundryLocationCaptured) })
+              Data       = locationFromBytes e.Data })
 }
 
 let private readExpenses (store: IEventStore) (stream: StreamId) = async {
     let! stored = store.Read stream Start
     return
         stored
-        |> List.filter  (fun e -> e.EventType = "LaundryExpenseLogged")
-        |> List.map     (fun e ->
-            let dto = fromBytes<ExpenseLoggedDto> e.Data
+        |> List.filter (fun e -> e.EventType = "LaundryExpenseLogged")
+        |> List.map    (fun e ->
             { Name       = e.EventType
               OccurredAt = e.OccurredAt
-              Data       = dtoToExpense dto })
+              Data       = expenseFromBytes e.Data })
 }
 
 // ─── Append helper ────────────────────────────────────────────────────────────
@@ -136,8 +148,7 @@ let setLocation (store: IEventStore) (stream: StreamId) (cmd: SetLocationCommand
         let corrId = Guid.CreateVersion7()
         let cauId  = Guid.CreateVersion7()
         for e in events do
-            let bytes = toBytes<LocationCapturedDto> { Location = e.Data.Location }
-            do! appendOne store stream corrId cauId e.Name bytes
+            do! appendOne store stream corrId cauId e.Name (locationToBytes e.Data)
         return Ok ()
 }
 
@@ -150,8 +161,7 @@ let logExpense (store: IEventStore) (stream: StreamId) (cmd: LogExpenseCommand) 
         let corrId = Guid.CreateVersion7()
         let cauId  = Guid.CreateVersion7()
         for e in events do
-            let bytes = toBytes<ExpenseLoggedDto> (expenseToDto e.Data)
-            do! appendOne store stream corrId cauId e.Name bytes
+            do! appendOne store stream corrId cauId e.Name (expenseToBytes e.Data)
         return Ok ()
 }
 
