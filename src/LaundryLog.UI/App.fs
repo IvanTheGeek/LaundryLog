@@ -1,14 +1,14 @@
 module LaundryLog.UI.App
 
 open Fun.Blazor
+open Fun.Blazor.Operators
+open FnTools.FnHCI.UI.Blazor.Components
 
-// Minimal POC component — proves Fun.Blazor CE syntax and reactive state work
-// on .NET 10 Blazor WASM. Mirrors the LaundryLog stepper interaction pattern.
+// Module-level builder instance — avoids allocating on every Render() call
+let private stepper = ComponentBuilder<Stepper>()
 
 type AppComponent() =
     inherit FunComponent()
-
-    let mutable count = 0
 
     override _.Render() =
         div {
@@ -19,30 +19,10 @@ type AppComponent() =
             }
             p {
                 style' "color: var(--cb-text-secondary, #6b5c4a); margin-bottom: 2rem;"
-                "Fun.Blazor · .NET 10 · POC"
+                "FnHCI.UI.Blazor · Stepper component"
             }
-
-            // Stepper — mirrors the LaundryLog quantity control
-            div {
-                style' "display: flex; align-items: center; gap: 1rem;"
-                button {
-                    style' "width: 64px; height: 64px; border-radius: 50%; background: var(--cb-accent, #d4820a); color: white; border: none; font-size: 1.5rem; cursor: pointer;"
-                    onclick (fun _ -> if count > 0 then count <- count - 1)
-                    "−"
-                }
-                span {
-                    style' "font-size: var(--cb-text-3xl, 2.4rem); font-weight: var(--cb-weight-bold, 700); min-width: 3rem; text-align: center;"
-                    string count
-                }
-                button {
-                    style' "width: 64px; height: 64px; border-radius: 50%; background: var(--cb-accent, #d4820a); color: white; border: none; font-size: 1.5rem; cursor: pointer;"
-                    onclick (fun _ -> count <- count + 1)
-                    "+"
-                }
-            }
-
-            p {
-                style' "margin-top: 1.5rem; color: var(--cb-text-muted, #999); font-size: var(--cb-text-sm, 0.8rem);"
-                "Click +/− to verify reactive state ↑"
+            stepper {
+                "InitialValue" => 1
+                "Min" => 1
             }
         }
