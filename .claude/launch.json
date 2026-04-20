@@ -4,8 +4,8 @@
     {
       "name": "laundrylog-ui",
       "runtimeExecutable": "dotnet",
-      "runtimeArgs": ["run", "--project", "src/LaundryLog.UI/LaundryLog.UI.fsproj", "--no-launch-profile"],
-      "port": 5000
+      "runtimeArgs": ["run", "--project", "src/LaundryLog.UI/LaundryLog.UI.fsproj", "--no-launch-profile", "--configuration", "Debug", "--urls", "http://localhost:8080"],
+      "port": 8080
     }
   ]
 }
