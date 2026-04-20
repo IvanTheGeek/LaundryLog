@@ -24,5 +24,6 @@ type AppComponent() =
             stepper {
                 "InitialValue" => 1
                 "Min" => 1
+                "Max" => (Some 9 : int option)
             }
         }

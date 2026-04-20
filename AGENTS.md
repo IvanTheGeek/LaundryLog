@@ -15,9 +15,11 @@ offline-capable, IRS-audit-ready.
 
 ## Domain
 
-**What is captured per expense:**
+**Each entry is exactly one machine type — never mixed:**
 - Machine type: `Washer | Dryer | Supplies`
-- Quantity (Washer/Dryer only — number of machines)
+- Quantity: 1–9 inclusive (Washer/Dryer only; Supplies has no quantity)
+  - Entered via stepper buttons (+/−) or by tapping the displayed number to type directly
+  - Valid set: {1,2,3,4,5,6,7,8,9} — 0 and 10+ are structurally excluded
 - Unit price (Washer/Dryer) or amount (Supplies)
 - Line total = quantity × unit price (calculated)
 - Payment method: `Cash | Card of name | App of name | Points of name`
