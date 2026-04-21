@@ -36,13 +36,14 @@ App data path: `/srv/runtipi/app-data/tipi-appstore/laundrylog/`
 | ufw | Done | allow 22/80/443 |
 | ivan user | Done | sudo (NOPASSWD), docker groups; debian locked |
 | RunTIPI v4.8.2 | Done | 4 containers healthy |
-| RunTIPI domain set | Done | ivanthegeek.com |
+| RunTIPI domain set | Done | runtipi.ivanthegeek.com |
+| RunTIPI admin secured | Done | Password changed + 2FA enabled |
 | Custom appstore added | Done | https://github.com/IvanTheGeek/tipi-appstore |
 | Directories created | Done | www/ and conf/ under app-data |
 | nginx config written | Done | No types{} block needed; wasm already in mime.types |
 | LaundryLog installed | Done | Container running |
-| HTTPS verified | Pending | DNS propagating; Traefik labels correct |
-| Ready for real deploy | Pending | Run deploy.sh once HTTPS confirms |
+| HTTPS verified | Done | Let's Encrypt cert issued; HTTP/2 200 |
+| Deployed | Done | Blazor app live at https://laundrylog.ivanthegeek.com |
 
 ---
 
