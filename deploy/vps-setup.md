@@ -85,6 +85,52 @@ Expected: `HTTP/2 200`, `content-type: text/html`
 
 ---
 
+## Traefik Redirects
+
+Custom redirects live at `/srv/runtipi/traefik/dynamic/redirects.yml` on the VPS.
+Traefik watches the `dynamic/` directory and picks up changes immediately — no restart needed.
+This file is NOT managed by RunTIPI and must be recreated manually after a full VPS rebuild.
+
+Current redirects:
+
+| From | To |
+|---|---|
+| `git.ivanthegeek.com` | `https://forgejo.ivanthegeek.com` |
+
+To recreate:
+
+```bash
+sudo tee /srv/runtipi/traefik/dynamic/redirects.yml << 'EOF'
+http:
+  middlewares:
+    git-to-forgejo:
+      redirectRegex:
+        regex: "^https?://git\\.ivanthegeek\\.com(.*)"
+        replacement: "https://forgejo.ivanthegeek.com${1}"
+        permanent: true
+
+  routers:
+    git-insecure:
+      rule: "Host(`git.ivanthegeek.com`)"
+      entryPoints:
+        - web
+      middlewares:
+        - git-to-forgejo
+      service: "noop@internal"
+    git-secure:
+      rule: "Host(`git.ivanthegeek.com`)"
+      entryPoints:
+        - websecure
+      middlewares:
+        - git-to-forgejo
+      service: "noop@internal"
+      tls:
+        certResolver: myresolver
+EOF
+```
+
+---
+
 ## Deploy
 
 ```bash

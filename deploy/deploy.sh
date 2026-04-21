@@ -6,7 +6,7 @@ PUBLISH_DIR="$SCRIPT_DIR/../src/LaundryLog.UI/bin/Release/net10.0/publish/wwwroo
 VPS_USER="ivan"
 VPS_HOST="vps.ivanthegeek.com"
 VPS_PATH="/srv/runtipi/app-data/tipi-appstore/laundrylog/www/"
-SSH_KEY="/home/ivan/kvmtest_ssh_ivanthegeek_com"
+SSH_KEY="$HOME/.ssh/kvmtest_ssh_ivanthegeek_com"
 
 dotnet publish "$SCRIPT_DIR/../src/LaundryLog.UI/LaundryLog.UI.fsproj" \
   --configuration Release
