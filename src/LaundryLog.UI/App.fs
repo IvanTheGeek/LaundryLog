@@ -4,13 +4,24 @@ open Fun.Blazor
 open Fun.Blazor.Operators
 open FnTools.FnHCI.UI.Blazor.Components
 
-// Module-level builder instance — avoids allocating on every Render() call
 let private stepper = ComponentBuilder<Stepper>()
 
 type AppComponent() =
     inherit FunComponent()
 
-    override _.Render() =
+    // Walking skeleton stand-in for the event store + projector.
+    // In the full model: OnCommand dispatches to a command handler → event →
+    // projector updates the View → View flows back as parameter.
+    let mutable quantity = 1
+
+    override this.Render() =
+        let handleCommand cmd =
+            match cmd with
+            | Increment    -> quantity <- min 9 (quantity + 1)
+            | Decrement    -> quantity <- max 1 (quantity - 1)
+            | DirectEntry n -> quantity <- n
+            this.StateHasChanged()
+
         div {
             style' "font-family: var(--cb-font-body, system-ui); max-width: 360px; margin: 2rem auto; padding: 1.5rem; background: var(--cb-surface-base, #f9f7f4);"
             h1 {
@@ -22,8 +33,9 @@ type AppComponent() =
                 "FnHCI.UI.Blazor · Stepper component"
             }
             stepper {
-                "InitialValue" => 1
-                "Min" => 1
-                "Max" => (Some 9 : int option)
+                "Value"     => quantity
+                "Min"       => 1
+                "Max"       => (Some 9 : int option)
+                "OnCommand" => handleCommand
             }
         }
