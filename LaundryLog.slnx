@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="src/LaundryLog/LaundryLog.fsproj" />
   <Project Path="tests/LaundryLog.Tests/LaundryLog.Tests.fsproj" />
+  <Project Path="src/LaundryLog.UI/LaundryLog.UI.fsproj" />
 </Solution>

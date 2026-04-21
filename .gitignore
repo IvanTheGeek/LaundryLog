@@ -7,6 +7,9 @@ artifacts/
 .idea/
 .ionide/
 
+# Blazor WASM template scaffold noise
+src/LaundryLog.UI/wwwroot/lib/
+
 # OS
 .DS_Store
 Thumbs.db
