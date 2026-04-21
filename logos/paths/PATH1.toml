@@ -8,6 +8,7 @@ concern_layers = [
   "ApplicationLifecycle",
   "RuntimeOrchestration",
   "Business",
+  "UX",
 ]
 
 # ---------------------------------------------------------------------------
