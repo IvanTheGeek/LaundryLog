@@ -6,6 +6,7 @@ open FnTools.FnHCI.UI.Blazor.Components
 open LaundryLog.UI
 open LaundryLog.UI.Components
 
+let private locationInput  = ComponentBuilder<LocationInput>()
 let private stepper        = ComponentBuilder<Stepper>()
 let private machineChips   = ComponentBuilder<MachineTypeChips>()
 let private moneyInput     = ComponentBuilder<MoneyInput>()
@@ -15,6 +16,7 @@ let private lineTotal      = ComponentBuilder<LineTotalDisplay>()
 type AppComponent() =
     inherit FunComponent()
 
+    let mutable locationText = ""
     let mutable machineType  : MachineType option  = None
     let mutable quantity     = 1
     let mutable unitPrice    : decimal option = None
@@ -58,6 +60,11 @@ type AppComponent() =
                 style' "color: var(--cb-text-secondary, #6b5c4a); margin-bottom: 1.5rem;"
                 "PATH1 · entry form · walking skeleton"
             }
+            locationInput {
+                "Text"          => locationText
+                "OnTextChanged" => (fun s -> locationText <- s; this.StateHasChanged())
+            }
+            div { style' "margin-top: 1.5rem;" }
             machineChips {
                 "Selected"   => machineType
                 "OnCommand"  => handleMachineType

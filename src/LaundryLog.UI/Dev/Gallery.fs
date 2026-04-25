@@ -9,11 +9,16 @@ open LaundryLog.UI.Components
 type GalleryComponent() =
     inherit FunComponent()
 
+    let location = ComponentBuilder<LocationInput>()
     let chips    = ComponentBuilder<MachineTypeChips>()
     let money    = ComponentBuilder<MoneyInput>()
     let stepperCb = ComponentBuilder<Stepper>()
     let payment  = ComponentBuilder<PaymentChips>()
     let total    = ComponentBuilder<LineTotalDisplay>()
+
+    // ── LocationInput story state ─────────────────────────────────────
+    let mutable locationEmpty = ""
+    let mutable locationFilled = "Love's #123 — Springfield, OH"
 
     // ── MachineTypeChips story state ──────────────────────────────────
     let mutable chipsNone     : MachineType option = None
@@ -119,6 +124,7 @@ type GalleryComponent() =
                     }
                     div {
                         style' "display:flex;flex-direction:column;gap:0.25rem;"
+                        a { href "#location-input";  style' "font-size:var(--cb-text-sm,0.875rem);color:var(--cb-text-secondary);text-decoration:none;padding:0.375rem 0.5rem;border-radius:var(--cb-radius-sm,0.25rem);display:block;"; "LocationInput" }
                         a { href "#machine-chips";   style' "font-size:var(--cb-text-sm,0.875rem);color:var(--cb-text-secondary);text-decoration:none;padding:0.375rem 0.5rem;border-radius:var(--cb-radius-sm,0.25rem);display:block;"; "MachineTypeChips" }
                         a { href "#money-input";     style' "font-size:var(--cb-text-sm,0.875rem);color:var(--cb-text-secondary);text-decoration:none;padding:0.375rem 0.5rem;border-radius:var(--cb-radius-sm,0.25rem);display:block;"; "MoneyInput" }
                         a { href "#stepper";         style' "font-size:var(--cb-text-sm,0.875rem);color:var(--cb-text-secondary);text-decoration:none;padding:0.375rem 0.5rem;border-radius:var(--cb-radius-sm,0.25rem);display:block;"; "Stepper" }
@@ -130,6 +136,15 @@ type GalleryComponent() =
                 // Main content
                 div {
                     style' "flex:1;min-width:0;padding:2rem 1.5rem;"
+
+                    gallerySection "location-input" "LocationInput" (html.fragment [
+                        card "Empty"
+                            (fun () -> locationEmpty <- ""; this.StateHasChanged())
+                            (location { "Text" => locationEmpty; "OnTextChanged" => (fun s -> locationEmpty <- s; this.StateHasChanged()) })
+                        card "Pre-filled"
+                            (fun () -> locationFilled <- "Love's #123 — Springfield, OH"; this.StateHasChanged())
+                            (location { "Text" => locationFilled; "OnTextChanged" => (fun s -> locationFilled <- s; this.StateHasChanged()) })
+                    ])
 
                     gallerySection "machine-chips" "MachineTypeChips" (html.fragment [
                         card "None selected"
