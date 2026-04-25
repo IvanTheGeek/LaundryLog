@@ -2,6 +2,7 @@
 
 > Workspace instructions: `../AGENTS.md`, `../FSHARP.md`, `../WORKFLOW.md`
 > NEXUS knowledge base: `../NEXUS-LOGOS/`
+> Design system: `artifacts/LaundryLog_Design_System_Handoff/LaundryLog Design System.html` — **read the relevant section before creating or modifying any UI component**
 
 ## Purpose
 
