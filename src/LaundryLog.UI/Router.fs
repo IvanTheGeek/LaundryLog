@@ -1,7 +1,6 @@
 module LaundryLog.UI.Router
 
 open Fun.Blazor
-open Fun.Blazor.Operators
 open Fun.Blazor.Router
 open LaundryLog.UI.Dev
 open LaundryLog.UI.App
@@ -10,14 +9,10 @@ open LaundryLog.UI.App
 type RootComponent() =
     inherit FunComponent()
 
-    let gallery = ComponentBuilder<GalleryComponent>()
-
     override _.Render() =
         html.route [
-            // /dev/location-input, /dev/machine-chips, etc. — isolated story view
-            routeCif "/dev/%s" (fun story -> gallery { "ActiveStory" => story })
-            // /dev — full gallery; ActiveStory must be explicitly "" so Blazor resets
-            // it when reusing the component instance from a prior story route
-            routeCi "/dev" (gallery { "ActiveStory" => "" })
+            // GalleryComponent owns its own sub-navigation (/dev/location-input etc.)
+            // by reading NavigationManager.Uri directly. No routeCif needed here.
+            routeCi "/dev" (html.blazor<GalleryComponent>())
             routeCi "/"    (html.blazor<AppComponent>())
         ]

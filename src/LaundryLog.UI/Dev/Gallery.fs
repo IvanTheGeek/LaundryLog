@@ -3,6 +3,7 @@ namespace LaundryLog.UI.Dev
 open Fun.Blazor
 open Fun.Blazor.Operators
 open Microsoft.AspNetCore.Components
+open Microsoft.AspNetCore.Components.Routing
 open FnTools.FnHCI.UI.Blazor.Components
 open LaundryLog.UI
 open LaundryLog.UI.Components
@@ -47,14 +48,31 @@ type GalleryComponent() =
     let mutable payPoints    : PaymentKind option = Some Points
     let mutable payPointsName = ""
 
-    // ── Parameter — must come after all let bindings ──────────────────
-    [<Parameter>] member val ActiveStory: string = "" with get, set
+    // ── Location change subscription ──────────────────────────────────
+    let mutable locationHandler: System.EventHandler<LocationChangedEventArgs> = Unchecked.defaultof<_>
+
+    // ── Injected services — must come after all let bindings ──────────
+    [<Inject>] member val Nav: NavigationManager = Unchecked.defaultof<_> with get, set
+
+    override this.OnInitialized() =
+        locationHandler <- System.EventHandler<_>(fun _ _ -> this.StateHasChanged())
+        this.Nav.LocationChanged.AddHandler(locationHandler)
+
+    interface System.IDisposable with
+        member this.Dispose() =
+            this.Nav.LocationChanged.RemoveHandler(locationHandler)
 
     override this.Render() =
 
+        // Derive active story from URL — no Parameter needed
+        let path = System.Uri(this.Nav.Uri).AbsolutePath.ToLower()
+        let activeStory =
+            if path.StartsWith("/dev/") then path.[5..].TrimEnd('/')
+            else ""
+
         // Show this section when viewing all or when it is the active story
         let show sectionId =
-            this.ActiveStory = "" || this.ActiveStory = sectionId
+            activeStory = "" || activeStory = sectionId
 
         let card (linkLabel: string) (onReset: unit -> unit) (body: NodeRenderFragment) =
             div {
@@ -93,7 +111,7 @@ type GalleryComponent() =
 
         // Tuple arg avoids CE parser ambiguity with two-string curried calls
         let navLink (sectionId: string, linkLabel: string) =
-            let isActive = this.ActiveStory = sectionId
+            let isActive = activeStory = sectionId
             let navStyle =
                 "font-size:var(--cb-text-sm,0.875rem);text-decoration:none;padding:0.375rem 0.5rem;border-radius:var(--cb-radius-sm,0.25rem);display:block;" +
                 if isActive then "color:var(--cb-text-accent);background:var(--cb-accent-subtle);font-weight:var(--cb-weight-semibold);"
@@ -124,11 +142,11 @@ type GalleryComponent() =
                     style' "font-weight:var(--cb-weight-bold,700);color:var(--cb-text-primary);text-decoration:none;"
                     "Component Gallery"
                 }
-                if this.ActiveStory <> "" then
+                if activeStory <> "" then
                     span { style' "color:var(--cb-border-default);"; "/" }
                     span {
                         style' "color:var(--cb-text-accent);font-weight:var(--cb-weight-semibold);"
-                        this.ActiveStory
+                        activeStory
                     }
                 span {
                     style' "margin-left:auto;font-size:var(--cb-text-xs,0.75rem);color:var(--cb-text-muted);"
