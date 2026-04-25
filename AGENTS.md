@@ -71,3 +71,4 @@ logos/
 | ApplicationLifecycle | AppStarted |
 | RuntimeOrchestration | RouteResolved |
 | Business | LaundryLocationCaptured, LaundryExpenseLogged, RecentExpenses |
+| UX | MachineTypeSelected, QuantityChanged, UnitPriceChanged, PaymentKindSelected, SubmitTapped |
