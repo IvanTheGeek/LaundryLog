@@ -8,17 +8,22 @@ open LaundryLog.UI.Components
 
 let private stepper      = ComponentBuilder<Stepper>()
 let private machineChips = ComponentBuilder<MachineTypeChips>()
+let private moneyInput   = ComponentBuilder<MoneyInput>()
 
 type AppComponent() =
     inherit FunComponent()
 
     let mutable machineType : MachineType option = None
-    let mutable quantity = 1
+    let mutable quantity  = 1
+    let mutable unitPrice : decimal option = None
+    let mutable amount    : decimal option = None
 
     override this.Render() =
         let handleMachineType mt =
             machineType <- Some mt
-            quantity <- 1
+            quantity  <- 1
+            unitPrice <- None
+            amount    <- None
             this.StateHasChanged()
 
         let handleQuantity cmd =
@@ -44,7 +49,14 @@ type AppComponent() =
             }
             match machineType with
             | None -> ()
-            | Some Supplies -> ()
+            | Some Supplies ->
+                div {
+                    style' "margin-top: 1.5rem;"
+                    moneyInput {
+                        "Value"     => amount
+                        "OnCommand" => (fun v -> amount <- v; this.StateHasChanged())
+                    }
+                }
             | Some _ ->
                 div {
                     style' "margin-top: 1.5rem;"
@@ -53,6 +65,11 @@ type AppComponent() =
                         "Min"       => 1
                         "Max"       => (Some 9 : int option)
                         "OnCommand" => handleQuantity
+                    }
+                    div { style' "margin-top: 1rem;" }
+                    moneyInput {
+                        "Value"     => unitPrice
+                        "OnCommand" => (fun v -> unitPrice <- v; this.StateHasChanged())
                     }
                 }
         }

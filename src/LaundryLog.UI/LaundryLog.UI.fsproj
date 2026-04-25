@@ -13,6 +13,7 @@
   <ItemGroup>
     <Compile Include="Domain.fs" />
     <Compile Include="Components/MachineTypeChips.fs" />
+    <Compile Include="Components/MoneyInput.fs" />
     <Compile Include="App.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

@@ -91,6 +91,108 @@ html, body {
 }
 
 /* ════════════════════════════════════
+   ll-money-grid / ll-coin-btn / ll-money-input — LaundryLog
+   Tokens: --ll-coin-*, --cb-space-*, --cb-font-mono, --cb-radius-md
+   ════════════════════════════════════ */
+.ll-money-grid {
+    display: grid;
+    grid-template-columns: var(--ll-coin-size) 1fr var(--ll-coin-size);
+    gap: var(--cb-space-3);
+    align-items: center;
+}
+
+.ll-coin-btn {
+    width: var(--ll-coin-size);
+    height: var(--ll-coin-size);
+    background: var(--ll-coin-bg);
+    border: 2px solid var(--ll-coin-border);
+    border-radius: 50%;
+    color: var(--ll-coin-text);
+    font-family: var(--cb-font-mono);
+    font-size: 0.8rem;
+    font-weight: var(--cb-weight-bold);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    line-height: 1;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.18), inset 0 1px 2px rgba(255,255,255,0.4);
+    transition: all var(--cb-duration-fast);
+    position: relative;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+}
+
+.ll-coin-btn::before {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: 50%;
+    border: 1px dashed rgba(128,128,128,0.25);
+}
+
+.ll-coin-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 12px rgba(0,0,0,0.22), inset 0 1px 2px rgba(255,255,255,0.4);
+}
+
+.ll-coin-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+.ll-coin-btn__sign {
+    font-size: 1.1rem;
+    font-weight: 900;
+    z-index: 1;
+}
+
+.ll-coin-btn__label {
+    font-size: 0.75rem;
+    font-weight: var(--cb-weight-bold);
+    z-index: 1;
+}
+
+.ll-money-field-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--cb-space-1);
+}
+
+.ll-money-currency {
+    font-size: var(--cb-text-xl);
+    font-weight: var(--cb-weight-bold);
+    color: var(--cb-text-secondary);
+}
+
+.ll-money-input {
+    width: 100%;
+    max-width: 130px;
+    min-width: 0;
+    padding: var(--cb-space-3) var(--cb-space-2);
+    border: 2px solid var(--cb-border-default);
+    border-radius: var(--cb-radius-md);
+    font-size: var(--cb-text-xl);
+    font-weight: var(--cb-weight-bold);
+    color: var(--cb-text-primary);
+    text-align: center;
+    background: var(--cb-surface-raised);
+    font-family: var(--cb-font-body);
+    transition: border-color var(--cb-duration-fast);
+}
+
+.ll-money-input:focus {
+    outline: none;
+    border-color: var(--cb-accent);
+    box-shadow: var(--cb-focus-ring);
+}
+
+/* ════════════════════════════════════
    fn-stepper — FnHCI.UI.Blazor
    Tokens: --ll-stepper-*
    ════════════════════════════════════ */
