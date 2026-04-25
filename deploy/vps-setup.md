@@ -60,12 +60,23 @@ server {
     brotli_static on;
     gzip_static on;
 
-    location / {
-        try_files $uri $uri/ /index.html;
+    # index.html — always revalidate; never serve stale
+    location = /index.html {
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
     }
 
+    # CSS — not content-hashed, so no-cache
+    location /css/ {
+        add_header Cache-Control "no-cache";
+    }
+
+    # Framework assemblies — content-hashed filenames; safe to cache forever
     location /_framework/ {
         add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+
+    location / {
+        try_files $uri $uri/ /index.html;
     }
 }
 ```
