@@ -16,7 +16,8 @@ type RootComponent() =
         html.route [
             // /dev/location-input, /dev/machine-chips, etc. — isolated story view
             routeCif "/dev/%s" (fun story -> gallery { "ActiveStory" => story })
-            // /dev — full gallery overview
-            routeCi "/dev" (html.blazor<GalleryComponent>())
-            routeCi "/"   (html.blazor<AppComponent>())
+            // /dev — full gallery; ActiveStory must be explicitly "" so Blazor resets
+            // it when reusing the component instance from a prior story route
+            routeCi "/dev" (gallery { "ActiveStory" => "" })
+            routeCi "/"    (html.blazor<AppComponent>())
         ]
