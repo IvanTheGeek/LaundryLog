@@ -31,6 +31,66 @@ html, body {
 }
 
 /* ════════════════════════════════════
+   fn-machine-chips — LaundryLog
+   Tokens: --ll-washer-*, --ll-dryer-*, --ll-supplies-*
+   ════════════════════════════════════ */
+.fn-machine-chips {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.fn-machine-chip {
+    flex: 1;
+    padding: 0.625rem 0;
+    border-radius: var(--cb-radius-md, 0.5rem);
+    border: 2px solid transparent;
+    font-size: var(--cb-text-sm, 0.875rem);
+    font-weight: var(--cb-weight-semibold, 600);
+    font-family: var(--cb-font-body, system-ui);
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s, color 0.12s;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+}
+
+.fn-machine-chip--washer {
+    background: var(--ll-washer-subtle);
+    border-color: var(--ll-washer-border);
+    color: var(--ll-washer-color);
+}
+
+.fn-machine-chip--dryer {
+    background: var(--ll-dryer-subtle);
+    border-color: var(--ll-dryer-border);
+    color: var(--ll-dryer-color);
+}
+
+.fn-machine-chip--supplies {
+    background: var(--ll-supplies-subtle);
+    border-color: var(--ll-supplies-border);
+    color: var(--ll-supplies-color);
+}
+
+.fn-machine-chip--washer.fn-machine-chip--selected {
+    background: var(--ll-washer-color);
+    border-color: var(--ll-washer-color);
+    color: oklch(100% 0 0);
+}
+
+.fn-machine-chip--dryer.fn-machine-chip--selected {
+    background: var(--ll-dryer-color);
+    border-color: var(--ll-dryer-color);
+    color: oklch(100% 0 0);
+}
+
+.fn-machine-chip--supplies.fn-machine-chip--selected {
+    background: var(--ll-supplies-color);
+    border-color: var(--ll-supplies-color);
+    color: oklch(100% 0 0);
+}
+
+/* ════════════════════════════════════
    fn-stepper — FnHCI.UI.Blazor
    Tokens: --ll-stepper-*
    ════════════════════════════════════ */
