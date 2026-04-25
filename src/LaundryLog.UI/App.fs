@@ -23,6 +23,7 @@ type AppComponent() =
     let mutable amount       : decimal option = None
     let mutable paymentKind  : PaymentKind option  = None
     let mutable paymentName  = ""
+    let mutable submitted    = false
 
     override this.Render() =
         let handleMachineType mt =
@@ -44,11 +45,40 @@ type AppComponent() =
             | DirectEntry n -> quantity <- n
             this.StateHasChanged()
 
+        let handleSubmit _ =
+            submitted <- true
+            this.StateHasChanged()
+            task {
+                do! System.Threading.Tasks.Task.Delay(2000)
+                submitted   <- false
+                machineType <- None
+                quantity    <- 1
+                unitPrice   <- None
+                amount      <- None
+                paymentKind <- None
+                paymentName <- ""
+                this.StateHasChanged()
+            } |> ignore
+
         let entryTotal =
             match machineType with
             | Some Supplies -> amount
             | Some _        -> unitPrice |> Option.map (fun p -> decimal quantity * p)
             | None          -> None
+
+        let locationReady = locationText <> ""
+        let typeReady     = machineType.IsSome
+        let paymentReady  = paymentKind.IsSome
+
+        let statusChip (chipLabel: string) (isReady: bool) =
+            span {
+                class' "ll-status-chip"
+                chipLabel
+                if isReady then
+                    strong { class' "ll-status-chip__mark--ready"; " ✓" }
+                else
+                    strong { class' "ll-status-chip__mark--missing"; " ✗" }
+            }
 
         div {
             style' "font-family: var(--cb-font-body, system-ui); max-width: 360px; margin: 2rem auto; padding: 1.5rem;"
@@ -113,4 +143,30 @@ type AppComponent() =
                         "OnNameCommand"  => (fun s -> paymentName <- s; this.StateHasChanged())
                     }
                 }
+            div {
+                style' "margin-top: 2rem;"
+                if submitted then
+                    button {
+                        class' "ll-btn ll-btn--success"
+                        disabled true
+                        "✓ Logged!"
+                    }
+                elif locationReady && typeReady && paymentReady then
+                    button {
+                        class' "ll-btn ll-btn--primary"
+                        onclick handleSubmit
+                        "Log Expense"
+                    }
+                else
+                    button {
+                        class' "ll-btn ll-btn--disabled"
+                        disabled true
+                        div {
+                            style' "display:flex;gap:8px;flex-wrap:wrap;justify-content:center;"
+                            statusChip "📍 Location" locationReady
+                            statusChip "🌊 Type" typeReady
+                            statusChip "💳 Payment" paymentReady
+                        }
+                    }
+            }
         }
