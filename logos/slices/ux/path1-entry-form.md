@@ -236,3 +236,20 @@ interface contract FORGE uses to generate each component.
 | `PaymentDetailInput` | `paymentDetail`, `paymentKind` (for placeholder) | `PaymentDetailChanged` |
 | `LineTotalDisplay` | `lineTotal` | _(read-only)_ |
 | `SubmitButton` | `canSubmit`, `lastLogged` | `SubmitTapped` |
+
+---
+
+## Input Field Interaction Patterns
+
+Patterns that apply consistently across all manual-entry fields.
+
+### Select-all on focus
+
+When the driver taps a numeric input field (Stepper value, MoneyInput), the
+entire current value is selected. The next keystroke replaces it entirely.
+
+**Rationale:** On a phone with a laundromat context, the driver almost always
+wants to replace the value, not append to it. Select-all removes the need to
+clear first.
+
+Applies to: `Stepper` (quantity), `MoneyInput` (unit price, amount).

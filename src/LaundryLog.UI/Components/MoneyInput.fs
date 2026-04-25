@@ -3,6 +3,7 @@ namespace LaundryLog.UI.Components
 open System
 open System.Globalization
 open Microsoft.AspNetCore.Components
+open Microsoft.JSInterop
 open Fun.Blazor
 
 /// Price/amount entry: coin-decrement · $ text field · coin-increment.
@@ -27,6 +28,9 @@ type MoneyInput() =
 
     [<Parameter>]
     member val OnCommand: decimal option -> unit = ignore with get, set
+
+    [<Inject>]
+    member val JS: IJSRuntime = Unchecked.defaultof<_> with get, set
 
     override this.Render() =
         let displayValue =
@@ -74,6 +78,7 @@ type MoneyInput() =
                     type' "text"
                     value displayValue
                     placeholder "0.00"
+                    onfocus (fun _ -> this.JS.InvokeVoidAsync("eval", "document.activeElement.select()") |> ignore)
                     onchange handleChange
                 }
             }
