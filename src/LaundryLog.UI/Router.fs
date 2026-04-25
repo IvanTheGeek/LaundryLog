@@ -11,8 +11,8 @@ type RootComponent() =
 
     override _.Render() =
         html.route [
-            // GalleryComponent owns its own sub-navigation (/dev/location-input etc.)
-            // by reading NavigationManager.Uri directly. No routeCif needed here.
-            routeCi "/dev" (html.blazor<GalleryComponent>())
-            routeCi "/"    (html.blazor<AppComponent>())
+            // /dev/section-id — GalleryComponent reads the URL itself via NavigationManager
+            routeCif "/dev/%s" (fun _ -> html.blazor<GalleryComponent>())
+            routeCi  "/dev"    (html.blazor<GalleryComponent>())
+            routeCi  "/"       (html.blazor<AppComponent>())
         ]
