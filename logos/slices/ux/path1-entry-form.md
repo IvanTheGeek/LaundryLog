@@ -239,6 +239,31 @@ interface contract FORGE uses to generate each component.
 
 ---
 
+## Deferred UI Features
+
+Features visible in the design system that are intentionally absent from PATH1.
+
+### Quick-fill Price Chips
+
+The design system shows an amber-tinted row of suggestion chips below the MoneyInput
+(between the price input and the line total). Three chip types:
+
+| Chip | Data source | Required |
+|---|---|---|
+| Last used | Personal history — most recent price for this machine type | STRATUM event store + projection |
+| Historical | Personal average across all entries for this machine type | STRATUM event store + projection |
+| Community | Aggregate from other users | External backend (not yet designed) |
+
+In PATH1 ("Fresh Launch — First Entry") there is no personal history, so the row would
+always be empty and must not render.
+
+**Deferred to:** after `feature/event-wiring` connects STRATUM and a price-history
+projection is available. Own branch: `feature/quickfill-chips`.
+
+Tapping a chip fires `UnitPriceChanged (Some v)` — same command as manual entry.
+
+---
+
 ## Input Field Interaction Patterns
 
 Patterns that apply consistently across all manual-entry fields.
