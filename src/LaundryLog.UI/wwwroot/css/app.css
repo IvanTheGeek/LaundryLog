@@ -31,63 +31,63 @@ html, body {
 }
 
 /* ════════════════════════════════════
-   fn-machine-chips — LaundryLog
+   ll-machine-chip — LaundryLog
    Tokens: --ll-washer-*, --ll-dryer-*, --ll-supplies-*
    ════════════════════════════════════ */
-.fn-machine-chips {
-    display: flex;
-    gap: 0.5rem;
+.ll-machine-group {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--cb-space-2, 0.5rem);
 }
 
-.fn-machine-chip {
-    flex: 1;
-    padding: 0.625rem 0;
-    border-radius: var(--cb-radius-md, 0.5rem);
-    border: 2px solid transparent;
+.ll-machine-chip {
+    border: 1.5px solid var(--cb-border-default);
+    background: var(--cb-surface-raised);
+    border-radius: var(--cb-radius-md);
+    padding: var(--cb-space-3, 0.75rem) var(--cb-space-2, 0.5rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-family: var(--cb-font-body, system-ui);
     font-size: var(--cb-text-sm, 0.875rem);
     font-weight: var(--cb-weight-semibold, 600);
-    font-family: var(--cb-font-body, system-ui);
+    color: var(--cb-text-secondary);
     cursor: pointer;
-    transition: background 0.12s, border-color 0.12s, color 0.12s;
+    min-height: 60px;
+    transition: all var(--cb-duration-fast, 0.12s) var(--cb-ease-standard, ease);
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
     user-select: none;
 }
 
-.fn-machine-chip--washer {
+.ll-machine-chip__icon {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.ll-machine-chip:hover {
+    border-color: var(--cb-border-strong);
+    color: var(--cb-text-primary);
+}
+
+.ll-machine-chip--washer.ll-machine-chip--selected {
     background: var(--ll-washer-subtle);
     border-color: var(--ll-washer-border);
     color: var(--ll-washer-color);
 }
 
-.fn-machine-chip--dryer {
+.ll-machine-chip--dryer.ll-machine-chip--selected {
     background: var(--ll-dryer-subtle);
     border-color: var(--ll-dryer-border);
     color: var(--ll-dryer-color);
 }
 
-.fn-machine-chip--supplies {
+.ll-machine-chip--supplies.ll-machine-chip--selected {
     background: var(--ll-supplies-subtle);
     border-color: var(--ll-supplies-border);
     color: var(--ll-supplies-color);
-}
-
-.fn-machine-chip--washer.fn-machine-chip--selected {
-    background: var(--ll-washer-color);
-    border-color: var(--ll-washer-color);
-    color: oklch(100% 0 0);
-}
-
-.fn-machine-chip--dryer.fn-machine-chip--selected {
-    background: var(--ll-dryer-color);
-    border-color: var(--ll-dryer-color);
-    color: oklch(100% 0 0);
-}
-
-.fn-machine-chip--supplies.fn-machine-chip--selected {
-    background: var(--ll-supplies-color);
-    border-color: var(--ll-supplies-color);
-    color: oklch(100% 0 0);
 }
 
 /* ════════════════════════════════════
