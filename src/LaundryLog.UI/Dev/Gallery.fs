@@ -9,9 +9,10 @@ open LaundryLog.UI.Components
 type GalleryComponent() =
     inherit FunComponent()
 
-    let chips = ComponentBuilder<MachineTypeChips>()
-    let money = ComponentBuilder<MoneyInput>()
+    let chips    = ComponentBuilder<MachineTypeChips>()
+    let money    = ComponentBuilder<MoneyInput>()
     let stepperCb = ComponentBuilder<Stepper>()
+    let payment  = ComponentBuilder<PaymentChips>()
 
     // ── MachineTypeChips story state ──────────────────────────────────
     let mutable chipsNone     : MachineType option = None
@@ -27,6 +28,16 @@ type GalleryComponent() =
     let mutable stepMin = 1
     let mutable stepMid = 5
     let mutable stepMax = 9
+
+    // ── PaymentChips story state ──────────────────────────────────────
+    let mutable payNone   : PaymentKind option = None
+    let mutable payCash   : PaymentKind option = Some Cash
+    let mutable payCard   : PaymentKind option = Some Card
+    let mutable payCardName = "Business SPARK"
+    let mutable payApp    : PaymentKind option = Some App
+    let mutable payAppName  = ""
+    let mutable payPoints : PaymentKind option = Some Points
+    let mutable payPointsName = ""
 
     override this.Render() =
 
@@ -107,9 +118,10 @@ type GalleryComponent() =
                     }
                     div {
                         style' "display:flex;flex-direction:column;gap:0.25rem;"
-                        a { href "#machine-chips"; style' "font-size:var(--cb-text-sm,0.875rem);color:var(--cb-text-secondary);text-decoration:none;padding:0.375rem 0.5rem;border-radius:var(--cb-radius-sm,0.25rem);display:block;"; "MachineTypeChips" }
-                        a { href "#money-input";   style' "font-size:var(--cb-text-sm,0.875rem);color:var(--cb-text-secondary);text-decoration:none;padding:0.375rem 0.5rem;border-radius:var(--cb-radius-sm,0.25rem);display:block;"; "MoneyInput" }
-                        a { href "#stepper";       style' "font-size:var(--cb-text-sm,0.875rem);color:var(--cb-text-secondary);text-decoration:none;padding:0.375rem 0.5rem;border-radius:var(--cb-radius-sm,0.25rem);display:block;"; "Stepper" }
+                        a { href "#machine-chips";   style' "font-size:var(--cb-text-sm,0.875rem);color:var(--cb-text-secondary);text-decoration:none;padding:0.375rem 0.5rem;border-radius:var(--cb-radius-sm,0.25rem);display:block;"; "MachineTypeChips" }
+                        a { href "#money-input";     style' "font-size:var(--cb-text-sm,0.875rem);color:var(--cb-text-secondary);text-decoration:none;padding:0.375rem 0.5rem;border-radius:var(--cb-radius-sm,0.25rem);display:block;"; "MoneyInput" }
+                        a { href "#stepper";         style' "font-size:var(--cb-text-sm,0.875rem);color:var(--cb-text-secondary);text-decoration:none;padding:0.375rem 0.5rem;border-radius:var(--cb-radius-sm,0.25rem);display:block;"; "Stepper" }
+                        a { href "#payment-chips";   style' "font-size:var(--cb-text-sm,0.875rem);color:var(--cb-text-secondary);text-decoration:none;padding:0.375rem 0.5rem;border-radius:var(--cb-radius-sm,0.25rem);display:block;"; "PaymentChips" }
                     }
                 }
 
@@ -151,6 +163,24 @@ type GalleryComponent() =
                         card "Starts at max (9)"
                             (fun () -> stepMax <- 9; this.StateHasChanged())
                             (stepperCb { "Value" => stepMax; "Min" => 1; "Max" => (Some 9 : int option); "OnCommand" => stepCmd (fun () -> stepMax) (fun v -> stepMax <- v) })
+                    ])
+
+                    gallerySection "payment-chips" "PaymentChips" (html.fragment [
+                        card "None selected"
+                            (fun () -> payNone <- None; this.StateHasChanged())
+                            (payment { "SelectedKind" => payNone; "DetailName" => ""; "OnKindCommand" => (fun k -> payNone <- Some k; this.StateHasChanged()); "OnNameCommand" => ignore })
+                        card "Cash selected"
+                            (fun () -> payCash <- Some Cash; this.StateHasChanged())
+                            (payment { "SelectedKind" => payCash; "DetailName" => ""; "OnKindCommand" => (fun k -> payCash <- Some k; this.StateHasChanged()); "OnNameCommand" => ignore })
+                        card "Card selected — with name"
+                            (fun () -> payCard <- Some Card; payCardName <- "Business SPARK"; this.StateHasChanged())
+                            (payment { "SelectedKind" => payCard; "DetailName" => payCardName; "OnKindCommand" => (fun k -> payCard <- Some k; payCardName <- ""; this.StateHasChanged()); "OnNameCommand" => (fun s -> payCardName <- s; this.StateHasChanged()) })
+                        card "App selected — empty name"
+                            (fun () -> payApp <- Some App; payAppName <- ""; this.StateHasChanged())
+                            (payment { "SelectedKind" => payApp; "DetailName" => payAppName; "OnKindCommand" => (fun k -> payApp <- Some k; payAppName <- ""; this.StateHasChanged()); "OnNameCommand" => (fun s -> payAppName <- s; this.StateHasChanged()) })
+                        card "Points selected — empty name"
+                            (fun () -> payPoints <- Some Points; payPointsName <- ""; this.StateHasChanged())
+                            (payment { "SelectedKind" => payPoints; "DetailName" => payPointsName; "OnKindCommand" => (fun k -> payPoints <- Some k; payPointsName <- ""; this.StateHasChanged()); "OnNameCommand" => (fun s -> payPointsName <- s; this.StateHasChanged()) })
                     ])
                 }
             }
