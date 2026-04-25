@@ -282,3 +282,8 @@ html, body {
 .ll-text-input { width: 100%; padding: var(--cb-space-3) var(--cb-space-4); border: 1.5px solid var(--cb-border-default); border-radius: var(--cb-radius-md); font-size: var(--cb-text-base); font-weight: var(--cb-weight-medium); color: var(--cb-text-primary); background: var(--cb-surface-raised); font-family: var(--cb-font-body); transition: border-color var(--cb-duration-fast); box-sizing: border-box; }
 .ll-text-input:focus { outline: none; border-color: var(--cb-accent); box-shadow: var(--cb-focus-ring); }
 .ll-text-input::placeholder { color: var(--cb-text-muted); }
+
+/* ─ Entry Total ─ */
+.ll-entry-total { background: var(--cb-surface-sunken); padding: var(--cb-space-3) var(--cb-space-4); border-radius: var(--cb-radius-md); display: flex; justify-content: space-between; align-items: center; }
+.ll-entry-total__label { font-size: var(--cb-text-sm); font-weight: var(--cb-weight-semibold); color: var(--cb-text-secondary); text-transform: uppercase; letter-spacing: var(--cb-tracking-wide); }
+.ll-entry-total__value { font-size: var(--cb-text-2xl); font-weight: var(--cb-weight-bold); color: var(--cb-text-primary); font-family: var(--cb-font-body); }
