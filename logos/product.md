@@ -26,6 +26,7 @@ IRS recordkeeping requirements.
 - Missing receipts are not a problem — the log itself is the record
 - Enough detail to support tax deduction documentation and later reconciliation
 - User owns the data — no cloud dependency required for the app to be useful
+  - However, some form of permanent remote/cloud storage is needed for the data to be truly safe
 
 ## Delivery Direction
 
