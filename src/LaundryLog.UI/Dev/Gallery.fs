@@ -30,16 +30,24 @@ type GalleryComponent() =
 
     override this.Render() =
 
-        let card (label: string) (body: NodeRenderFragment) =
+        let card (label: string) (onReset: unit -> unit) (body: NodeRenderFragment) =
             div {
                 style' "display:flex;flex-direction:column;gap:0.5rem;"
                 div {
                     style' "border:1px solid var(--cb-border-default);border-radius:var(--cb-radius-md);padding:1.25rem 1rem;background:var(--cb-surface-raised);min-width:300px;"
                     body
                 }
-                span {
-                    style' "font-size:0.6875rem;color:var(--cb-text-muted);text-transform:uppercase;letter-spacing:0.08em;font-weight:600;"
-                    label
+                div {
+                    style' "display:flex;align-items:center;justify-content:space-between;"
+                    span {
+                        style' "font-size:0.6875rem;color:var(--cb-text-muted);text-transform:uppercase;letter-spacing:0.08em;font-weight:600;"
+                        label
+                    }
+                    button {
+                        style' "font-size:0.6875rem;color:var(--cb-text-muted);background:none;border:none;cursor:pointer;padding:0.125rem 0.25rem;border-radius:2px;opacity:0.6;"
+                        onclick (fun _ -> onReset ())
+                        "↺ reset"
+                    }
                 }
             }
 
@@ -111,28 +119,37 @@ type GalleryComponent() =
 
                     gallerySection "machine-chips" "MachineTypeChips" (html.fragment [
                         card "None selected"
+                            (fun () -> chipsNone <- None; this.StateHasChanged())
                             (chips { "Selected" => chipsNone; "OnCommand" => (fun mt -> chipsNone <- Some mt; this.StateHasChanged()) })
                         card "Washer selected"
+                            (fun () -> chipsWasher <- Some Washer; this.StateHasChanged())
                             (chips { "Selected" => chipsWasher; "OnCommand" => (fun mt -> chipsWasher <- Some mt; this.StateHasChanged()) })
                         card "Dryer selected"
+                            (fun () -> chipsDryer <- Some Dryer; this.StateHasChanged())
                             (chips { "Selected" => chipsDryer; "OnCommand" => (fun mt -> chipsDryer <- Some mt; this.StateHasChanged()) })
                         card "Supplies selected"
+                            (fun () -> chipsSupplies <- Some Supplies; this.StateHasChanged())
                             (chips { "Selected" => chipsSupplies; "OnCommand" => (fun mt -> chipsSupplies <- Some mt; this.StateHasChanged()) })
                     ])
 
                     gallerySection "money-input" "MoneyInput" (html.fragment [
                         card "Empty"
+                            (fun () -> moneyEmpty <- None; this.StateHasChanged())
                             (money { "Value" => moneyEmpty; "OnCommand" => (fun v -> moneyEmpty <- v; this.StateHasChanged()) })
                         card "Pre-filled $3.75"
+                            (fun () -> moneyFilled <- Some 3.75m; this.StateHasChanged())
                             (money { "Value" => moneyFilled; "OnCommand" => (fun v -> moneyFilled <- v; this.StateHasChanged()) })
                     ])
 
                     gallerySection "stepper" "Stepper" (html.fragment [
                         card "Starts at min (1)"
+                            (fun () -> stepMin <- 1; this.StateHasChanged())
                             (stepperCb { "Value" => stepMin; "Min" => 1; "Max" => (Some 9 : int option); "OnCommand" => stepCmd (fun () -> stepMin) (fun v -> stepMin <- v) })
                         card "Starts at mid (5)"
+                            (fun () -> stepMid <- 5; this.StateHasChanged())
                             (stepperCb { "Value" => stepMid; "Min" => 1; "Max" => (Some 9 : int option); "OnCommand" => stepCmd (fun () -> stepMid) (fun v -> stepMid <- v) })
                         card "Starts at max (9)"
+                            (fun () -> stepMax <- 9; this.StateHasChanged())
                             (stepperCb { "Value" => stepMax; "Min" => 1; "Max" => (Some 9 : int option); "OnCommand" => stepCmd (fun () -> stepMax) (fun v -> stepMax <- v) })
                     ])
                 }
