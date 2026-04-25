@@ -261,3 +261,24 @@ html, body {
 .fn-stepper-value:focus {
     border-bottom-color: var(--cb-accent);
 }
+
+/* ─ Payment Chips ─ */
+.ll-payment-group { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--cb-space-2); }
+.ll-payment-chip {
+  border: 1.5px solid var(--cb-border-default);
+  background: var(--cb-surface-raised);
+  border-radius: var(--cb-radius-md);
+  padding: var(--cb-space-3) var(--cb-space-2);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  font-family: var(--cb-font-body); font-size: var(--cb-text-sm); font-weight: var(--cb-weight-semibold);
+  color: var(--cb-text-secondary); cursor: pointer; min-height: 58px;
+  transition: all var(--cb-duration-fast);
+}
+.ll-payment-chip__icon { font-size: 1rem; line-height: 1; }
+.ll-payment-chip:hover { border-color: var(--cb-border-strong); color: var(--cb-text-primary); }
+.ll-payment-chip--selected { background: var(--cb-accent-subtle); border-color: var(--cb-border-accent); color: var(--cb-text-accent); }
+
+/* ─ Text Input (shared — payment name, location) ─ */
+.ll-text-input { width: 100%; padding: var(--cb-space-3) var(--cb-space-4); border: 1.5px solid var(--cb-border-default); border-radius: var(--cb-radius-md); font-size: var(--cb-text-base); font-weight: var(--cb-weight-medium); color: var(--cb-text-primary); background: var(--cb-surface-raised); font-family: var(--cb-font-body); transition: border-color var(--cb-duration-fast); box-sizing: border-box; }
+.ll-text-input:focus { outline: none; border-color: var(--cb-accent); box-shadow: var(--cb-focus-ring); }
+.ll-text-input::placeholder { color: var(--cb-text-muted); }

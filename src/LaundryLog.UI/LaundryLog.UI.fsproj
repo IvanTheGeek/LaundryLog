@@ -14,6 +14,7 @@
     <Compile Include="Domain.fs" />
     <Compile Include="Components/MachineTypeChips.fs" />
     <Compile Include="Components/MoneyInput.fs" />
+    <Compile Include="Components/PaymentChips.fs" />
     <Compile Include="Dev/Gallery.fs" />
     <Compile Include="App.fs" />
     <Compile Include="Router.fs" />

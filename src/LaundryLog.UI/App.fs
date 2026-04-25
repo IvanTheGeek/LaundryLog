@@ -6,24 +6,32 @@ open FnTools.FnHCI.UI.Blazor.Components
 open LaundryLog.UI
 open LaundryLog.UI.Components
 
-let private stepper      = ComponentBuilder<Stepper>()
-let private machineChips = ComponentBuilder<MachineTypeChips>()
-let private moneyInput   = ComponentBuilder<MoneyInput>()
+let private stepper        = ComponentBuilder<Stepper>()
+let private machineChips   = ComponentBuilder<MachineTypeChips>()
+let private moneyInput     = ComponentBuilder<MoneyInput>()
+let private paymentChips   = ComponentBuilder<PaymentChips>()
 
 type AppComponent() =
     inherit FunComponent()
 
-    let mutable machineType : MachineType option = None
-    let mutable quantity  = 1
-    let mutable unitPrice : decimal option = None
-    let mutable amount    : decimal option = None
+    let mutable machineType  : MachineType option  = None
+    let mutable quantity     = 1
+    let mutable unitPrice    : decimal option = None
+    let mutable amount       : decimal option = None
+    let mutable paymentKind  : PaymentKind option  = None
+    let mutable paymentName  = ""
 
     override this.Render() =
         let handleMachineType mt =
             machineType <- Some mt
-            quantity  <- 1
-            unitPrice <- None
-            amount    <- None
+            quantity    <- 1
+            unitPrice   <- None
+            amount      <- None
+            this.StateHasChanged()
+
+        let handlePaymentKind kind =
+            paymentKind <- Some kind
+            paymentName <- ""
             this.StateHasChanged()
 
         let handleQuantity cmd =
@@ -70,6 +78,18 @@ type AppComponent() =
                     moneyInput {
                         "Value"     => unitPrice
                         "OnCommand" => (fun v -> unitPrice <- v; this.StateHasChanged())
+                    }
+                }
+            match machineType with
+            | None -> ()
+            | Some _ ->
+                div {
+                    style' "margin-top: 1.5rem;"
+                    paymentChips {
+                        "SelectedKind"   => paymentKind
+                        "DetailName"     => paymentName
+                        "OnKindCommand"  => handlePaymentKind
+                        "OnNameCommand"  => (fun s -> paymentName <- s; this.StateHasChanged())
                     }
                 }
         }

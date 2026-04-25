@@ -70,7 +70,12 @@ server {
         add_header Cache-Control "no-cache";
     }
 
-    # Framework assemblies — content-hashed filenames; safe to cache forever
+    # dotnet.js is the WASM bootstrapper — not content-hashed; must always revalidate
+    location = /_framework/dotnet.js {
+        add_header Cache-Control "no-cache";
+    }
+
+    # Everything else in _framework/ is content-hashed — safe to cache forever
     location /_framework/ {
         add_header Cache-Control "public, max-age=31536000, immutable";
     }
