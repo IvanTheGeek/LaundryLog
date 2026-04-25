@@ -298,3 +298,23 @@ html, body {
 .ll-location-info { font-size: var(--cb-text-xs); color: var(--cb-text-muted); margin-top: 4px; }
 .ll-gps-btn { width: 52px; height: 52px; flex-shrink: 0; border: 1.5px solid var(--ll-gps-btn-border); background: var(--ll-gps-btn-bg); border-radius: var(--cb-radius-md); font-size: 1.375rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all var(--cb-duration-fast); }
 .ll-gps-btn:hover { background: var(--cb-accent-subtle); border-color: var(--cb-border-accent); }
+
+/* ─ Submit Button ─ */
+.ll-btn {
+  width: 100%; border: none; border-radius: var(--cb-radius-lg);
+  min-height: 60px; padding: var(--cb-space-3) var(--cb-space-4);
+  font-family: var(--cb-font-body); font-size: var(--cb-text-md);
+  font-weight: var(--cb-weight-bold); cursor: pointer;
+  transition: all var(--cb-duration-normal) var(--cb-ease-standard);
+  display: flex; align-items: center; justify-content: center; gap: var(--cb-space-2);
+}
+.ll-btn--primary { background: linear-gradient(135deg, var(--ll-header-from) 0%, var(--ll-header-to) 100%); color: var(--ll-header-text); box-shadow: 0 4px 14px rgba(0,0,0,0.14); }
+.ll-btn--primary:hover { filter: brightness(1.04); box-shadow: 0 6px 18px rgba(0,0,0,0.18); }
+.ll-btn--disabled { background: var(--cb-border-default); color: var(--cb-text-muted); cursor: not-allowed; box-shadow: none; }
+.ll-btn--success { background: linear-gradient(135deg, var(--cb-green-500) 0%, var(--cb-green-700) 100%); color: white; box-shadow: 0 4px 14px rgba(34,197,94,0.25); }
+
+/* ─ Status Chips (inside disabled submit button) ─ */
+.ll-status-chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px var(--cb-space-2); background: rgba(255,255,255,0.9); border-radius: var(--cb-radius-pill); font-size: var(--cb-text-xs); font-weight: var(--cb-weight-semibold); color: var(--cb-text-secondary); white-space: nowrap; }
+[data-theme="dark"] .ll-status-chip { background: rgba(255,255,255,0.1); }
+.ll-status-chip__mark--ready   { color: var(--ll-status-ready-color); font-weight: 800; }
+.ll-status-chip__mark--missing { color: var(--ll-status-missing-color); font-weight: 800; }
