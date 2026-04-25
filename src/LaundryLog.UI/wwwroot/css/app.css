@@ -313,6 +313,22 @@ html, body {
 .ll-btn--disabled { background: var(--cb-border-default); color: var(--cb-text-muted); cursor: not-allowed; box-shadow: none; }
 .ll-btn--success { background: linear-gradient(135deg, var(--cb-green-500) 0%, var(--cb-green-700) 100%); color: white; box-shadow: 0 4px 14px rgba(34,197,94,0.25); }
 
+/* ─ Session Bar ─ */
+.ll-session-bar { background: var(--ll-session-bg); border: 1.5px solid var(--ll-session-border); border-radius: var(--cb-radius-md); padding: var(--cb-space-3) var(--cb-space-4); display: flex; justify-content: space-between; align-items: center; }
+.ll-session-bar__label { font-size: var(--cb-text-sm); font-weight: var(--cb-weight-semibold); color: var(--ll-session-text); text-transform: uppercase; letter-spacing: var(--cb-tracking-wide); }
+.ll-session-bar__value { font-size: var(--cb-text-xl); font-weight: var(--cb-weight-bold); color: var(--ll-session-text); }
+
+/* ─ Entry Card ─ */
+.ll-entry-card { background: var(--cb-surface-raised); border-radius: var(--cb-radius-lg); padding: var(--cb-space-4); box-shadow: var(--cb-shadow-xs); border: 1px solid var(--cb-border-default); border-left: 3px solid var(--ll-entry-accent-l); width: 100%; box-sizing: border-box; }
+.ll-entry-card--logged { border-left-color: var(--ll-entry-accent-l-logged); }
+.ll-entry-card__top { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--cb-space-1); }
+.ll-entry-card__amount { font-size: var(--cb-text-xl); font-weight: var(--cb-weight-bold); color: var(--cb-text-primary); }
+.ll-entry-card__time { font-size: var(--cb-text-xs); color: var(--cb-text-muted); }
+.ll-entry-card__detail { font-size: var(--cb-text-sm); color: var(--cb-text-secondary); }
+
+/* ─ Feedback Banner ─ */
+.ll-feedback { background: var(--ll-feedback-bg); border: 1px solid var(--ll-feedback-border); color: var(--ll-feedback-text); border-radius: var(--cb-radius-md); padding: var(--cb-space-3) var(--cb-space-4); font-size: var(--cb-text-sm); font-weight: var(--cb-weight-bold); }
+
 /* ─ Status Chips (inside disabled submit button) ─ */
 .ll-status-chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px var(--cb-space-2); background: rgba(255,255,255,0.9); border-radius: var(--cb-radius-pill); font-size: var(--cb-text-xs); font-weight: var(--cb-weight-semibold); color: var(--cb-text-secondary); white-space: nowrap; }
 [data-theme="dark"] .ll-status-chip { background: rgba(255,255,255,0.1); }
