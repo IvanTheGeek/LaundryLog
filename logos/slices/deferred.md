@@ -64,6 +64,25 @@ explicit stored boundary.
 
 ---
 
+## Deferred UI Features
+
+UI components visible in the design system that require data not yet available.
+
+### Quick-fill Price Chips (`feature/quickfill-chips`)
+
+Amber-tinted suggestion row below MoneyInput. Three chips: Last used, Historical,
+Community. Tapping any chip fires `UnitPriceChanged (Some v)` — same as manual entry.
+
+**Blocked on:**
+- STRATUM event store connected (`feature/event-wiring`)
+- A price-history projection reading past `LaundryExpenseLogged` events
+- Community chip requires an external backend not yet designed
+
+PATH1 has no prior history so the row must not render. Full spec in
+`logos/slices/ux/path1-entry-form.md § Deferred UI Features`.
+
+---
+
 ## Open Questions That Feed These Slices
 
 See `logos/open-questions.md` for the unresolved decisions that bear on

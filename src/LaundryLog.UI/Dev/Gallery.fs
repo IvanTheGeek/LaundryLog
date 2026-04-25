@@ -13,6 +13,7 @@ type GalleryComponent() =
     let money    = ComponentBuilder<MoneyInput>()
     let stepperCb = ComponentBuilder<Stepper>()
     let payment  = ComponentBuilder<PaymentChips>()
+    let total    = ComponentBuilder<LineTotalDisplay>()
 
     // ── MachineTypeChips story state ──────────────────────────────────
     let mutable chipsNone     : MachineType option = None
@@ -122,6 +123,7 @@ type GalleryComponent() =
                         a { href "#money-input";     style' "font-size:var(--cb-text-sm,0.875rem);color:var(--cb-text-secondary);text-decoration:none;padding:0.375rem 0.5rem;border-radius:var(--cb-radius-sm,0.25rem);display:block;"; "MoneyInput" }
                         a { href "#stepper";         style' "font-size:var(--cb-text-sm,0.875rem);color:var(--cb-text-secondary);text-decoration:none;padding:0.375rem 0.5rem;border-radius:var(--cb-radius-sm,0.25rem);display:block;"; "Stepper" }
                         a { href "#payment-chips";   style' "font-size:var(--cb-text-sm,0.875rem);color:var(--cb-text-secondary);text-decoration:none;padding:0.375rem 0.5rem;border-radius:var(--cb-radius-sm,0.25rem);display:block;"; "PaymentChips" }
+                        a { href "#line-total";      style' "font-size:var(--cb-text-sm,0.875rem);color:var(--cb-text-secondary);text-decoration:none;padding:0.375rem 0.5rem;border-radius:var(--cb-radius-sm,0.25rem);display:block;"; "LineTotalDisplay" }
                     }
                 }
 
@@ -181,6 +183,21 @@ type GalleryComponent() =
                         card "Points selected — empty name"
                             (fun () -> payPoints <- Some Points; payPointsName <- ""; this.StateHasChanged())
                             (payment { "SelectedKind" => payPoints; "DetailName" => payPointsName; "OnKindCommand" => (fun k -> payPoints <- Some k; payPointsName <- ""; this.StateHasChanged()); "OnNameCommand" => (fun s -> payPointsName <- s; this.StateHasChanged()) })
+                    ])
+
+                    gallerySection "line-total" "LineTotalDisplay" (html.fragment [
+                        card "No value — renders nothing"
+                            (fun () -> ())
+                            (total { "Total" => (None : decimal option) })
+                        card "Supplies $4.25"
+                            (fun () -> ())
+                            (total { "Total" => (Some 4.25m : decimal option) })
+                        card "2 × $3.75 = $7.50"
+                            (fun () -> ())
+                            (total { "Total" => (Some 7.50m : decimal option) })
+                        card "9 × $1.00 = $9.00"
+                            (fun () -> ())
+                            (total { "Total" => (Some 9.00m : decimal option) })
                     ])
                 }
             }

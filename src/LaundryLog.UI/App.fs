@@ -10,6 +10,7 @@ let private stepper        = ComponentBuilder<Stepper>()
 let private machineChips   = ComponentBuilder<MachineTypeChips>()
 let private moneyInput     = ComponentBuilder<MoneyInput>()
 let private paymentChips   = ComponentBuilder<PaymentChips>()
+let private lineTotal      = ComponentBuilder<LineTotalDisplay>()
 
 type AppComponent() =
     inherit FunComponent()
@@ -40,6 +41,12 @@ type AppComponent() =
             | Decrement     -> quantity <- max 1 (quantity - 1)
             | DirectEntry n -> quantity <- n
             this.StateHasChanged()
+
+        let entryTotal =
+            match machineType with
+            | Some Supplies -> amount
+            | Some _        -> unitPrice |> Option.map (fun p -> decimal quantity * p)
+            | None          -> None
 
         div {
             style' "font-family: var(--cb-font-body, system-ui); max-width: 360px; margin: 2rem auto; padding: 1.5rem;"
@@ -79,6 +86,13 @@ type AppComponent() =
                         "Value"     => unitPrice
                         "OnCommand" => (fun v -> unitPrice <- v; this.StateHasChanged())
                     }
+                }
+            match machineType with
+            | None -> ()
+            | Some _ ->
+                div {
+                    style' "margin-top: 1.5rem;"
+                    lineTotal { "Total" => entryTotal }
                 }
             match machineType with
             | None -> ()
