@@ -168,10 +168,10 @@ type GalleryComponent() =
                     gallerySection "payment-chips" "PaymentChips" (html.fragment [
                         card "None selected"
                             (fun () -> payNone <- None; this.StateHasChanged())
-                            (payment { "SelectedKind" => payNone; "DetailName" => ""; "OnKindCommand" => (fun k -> payNone <- Some k; this.StateHasChanged()); "OnNameCommand" => ignore })
+                            (payment { "SelectedKind" => payNone; "DetailName" => ""; "OnKindCommand" => (fun k -> payNone <- Some k; this.StateHasChanged()); "OnNameCommand" => (fun (_ : string) -> ()) })
                         card "Cash selected"
                             (fun () -> payCash <- Some Cash; this.StateHasChanged())
-                            (payment { "SelectedKind" => payCash; "DetailName" => ""; "OnKindCommand" => (fun k -> payCash <- Some k; this.StateHasChanged()); "OnNameCommand" => ignore })
+                            (payment { "SelectedKind" => payCash; "DetailName" => ""; "OnKindCommand" => (fun k -> payCash <- Some k; this.StateHasChanged()); "OnNameCommand" => (fun (_ : string) -> ()) })
                         card "Card selected — with name"
                             (fun () -> payCard <- Some Card; payCardName <- "Business SPARK"; this.StateHasChanged())
                             (payment { "SelectedKind" => payCard; "DetailName" => payCardName; "OnKindCommand" => (fun k -> payCard <- Some k; payCardName <- ""; this.StateHasChanged()); "OnNameCommand" => (fun s -> payCardName <- s; this.StateHasChanged()) })
