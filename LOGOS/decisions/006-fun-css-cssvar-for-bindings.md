@@ -15,12 +15,14 @@ LaundryLog UI is built with Fun.Blazor (Fun.Css for styling). Token references i
 
 ## Decision
 
-The `FnTools.DesignTokens.Bindings` emitter (planned) generates a `Tokens` module where each leaf token is a `Fun.Css.CssVar` value. Components reference tokens as `Tokens.Color.Text.Primary` — the type system ensures only valid token paths appear in component code.
+The `FnTools.DesignTokens.Bindings` emitter generates a `Tokens` module where each leaf token is a `string` constant holding the CSS `var()` reference (e.g. `"var(--color-text-primary)"`). Components reference tokens as `Tokens.Color.Text.Primary` — the compiler enforces valid token paths.
+
+`Fun.Css.CssVar` was the original design target, but `Fun.Css.CssBuilder` property operations (e.g. `color`) accept plain strings directly, so no wrapper type is needed. The generated file has zero runtime dependencies.
 
 ## Consequences
 
-- Token references in components are compile-time checked.
+- Token references in components are compile-time checked: invalid paths fail at build.
 - Renaming a token propagates as a compile error to all consumers.
-- `Fun.Css.CssVar` values are only useful with Fun.Css — this ties the generated bindings to the Fun.Css ecosystem.
-- The bindings emitter takes a `Fun.Css` package dependency; the core `FnTools.DesignTokens.*` packages do not.
+- String values work with any F# CSS approach — Fun.Css, inline styles, or attribute helpers.
 - Generated bindings are re-emitted whenever token files change; they are not hand-maintained.
+- `tokens/Tokens.fs` in LaundryLog is the current generated output (161 lines).
