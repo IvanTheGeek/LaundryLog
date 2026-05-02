@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="../../tokens/Tokens.fs" />
     <Compile Include="Domain.fs" />
     <Compile Include="Store.fs" />
     <Compile Include="Components/LocationInput.fs" />

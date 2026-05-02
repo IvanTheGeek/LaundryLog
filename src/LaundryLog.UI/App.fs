@@ -138,7 +138,7 @@ type AppComponent() =
 
         // ── Render ────────────────────────────────────────────────────
         div {
-            style' "font-family: var(--cb-font-body, system-ui); max-width: 360px; margin: 2rem auto; padding: 1.5rem;"
+            style' $"font-family: {Tokens.Font.Family.Body}; max-width: 360px; margin: 2rem auto; padding: 1.5rem;"
 
             locationInput {
                 "Text"          => locationText
@@ -227,7 +227,7 @@ type AppComponent() =
                 div {
                     style' "margin-top: 2rem;"
                     p {
-                        style' "font-size:var(--cb-text-xs);font-weight:var(--cb-weight-semibold);letter-spacing:var(--cb-tracking-wider);text-transform:uppercase;color:var(--cb-text-muted);margin:0 0 0.5rem 0;"
+                        style' $"font-size:{Tokens.Font.Size.Xs};font-weight:{Tokens.Font.Weight.Semibold};letter-spacing:0.1em;text-transform:uppercase;color:{Tokens.Color.Text.Muted};margin:0 0 0.5rem 0;"
                         "Today's Entries"
                     }
                     div {

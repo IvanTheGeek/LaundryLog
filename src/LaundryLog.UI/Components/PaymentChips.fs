@@ -34,7 +34,7 @@ type PaymentChips() =
             | _           -> ""
 
         div {
-            style' "display:flex;flex-direction:column;gap:var(--cb-space-2);"
+            style' $"display:flex;flex-direction:column;gap:{Tokens.Spacing.N2};"
             div {
                 class' "ll-payment-group"
                 chip Cash   "💵" "Cash"
