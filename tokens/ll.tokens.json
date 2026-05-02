@@ -1,0 +1,23 @@
+{
+  "$schema": "https://design-tokens.org/schemas/2025.10/format.schema.json",
+  "color": {
+    "$type": "color",
+    "machine": {
+      "washer": {
+        "default": { "$value": { "colorSpace": "oklch", "components": [0.560, 0.140, 200] } },
+        "subtle":  { "$value": { "colorSpace": "oklch", "components": [0.940, 0.040, 200] } },
+        "border":  { "$value": { "colorSpace": "oklch", "components": [0.780, 0.090, 200] } }
+      },
+      "dryer": {
+        "default": { "$value": { "colorSpace": "oklch", "components": [0.600, 0.170, 48] } },
+        "subtle":  { "$value": { "colorSpace": "oklch", "components": [0.950, 0.040, 50] } },
+        "border":  { "$value": { "colorSpace": "oklch", "components": [0.800, 0.100, 50] } }
+      },
+      "supplies": {
+        "default": { "$value": { "colorSpace": "oklch", "components": [0.560, 0.140, 290] } },
+        "subtle":  { "$value": { "colorSpace": "oklch", "components": [0.940, 0.040, 290] } },
+        "border":  { "$value": { "colorSpace": "oklch", "components": [0.780, 0.080, 290] } }
+      }
+    }
+  }
+}

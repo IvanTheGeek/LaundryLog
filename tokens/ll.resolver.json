@@ -1,0 +1,10 @@
+{
+  "version": "2025.10",
+  "name": "LaundryLog",
+  "description": "CheddarBooks base + LaundryLog extensions. cb loads first; ll overrides win.",
+  "sets": {
+    "cb": { "sources": "cb.tokens.json" },
+    "ll": { "sources": "ll.tokens.json" }
+  },
+  "resolutionOrder": ["cb", "ll"]
+}
