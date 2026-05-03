@@ -38,8 +38,10 @@ All DTCG-emitted token names follow this pattern:
 --font-family-body
 --font-size-base
 --font-weight-semibold
+--font-line-height-normal
+--font-letter-spacing-wide
 --radius-md
---shadow-focusRing
+--shadow-focus-ring
 --duration-fast
 --easing-standard
 ```
@@ -118,37 +120,25 @@ See `LOGOS/decisions/` for the full ADR list. The most relevant:
 ## Letter-spacing note
 
 DTCG stores letter-spacing as a unitless number (e.g. `0.05`). The emitted CSS var
-(`--font-letterSpacing-wide: 0.05`) is unitless. CSS `letter-spacing` requires a unit,
-so use `0.05em` directly in stylesheets and inline styles — not `var(--font-letterSpacing-wide)`.
+(`--font-letter-spacing-wide: 0.05`) is unitless. CSS `letter-spacing` requires a unit,
+so use `0.05em` directly in stylesheets and inline styles — not `var(--font-letter-spacing-wide)`.
 This is a known limitation; the token definition will be revisited.
 
-## Known naming issues (pending rename)
+## Naming
 
-The following token names have structural problems identified in a naming review
-(ref: `FnTools.DesignTokens/LOGOS/naming.md`). They will be renamed in a future breaking
-commit before any external consumers are established. When that happens, `ll.css` and
-`Tokens.fs` will be re-emitted and all references in `app.css` and F# components updated.
+Token naming follows the EightShapes anatomy (category → property/concept → variant → modifier).
+Full analysis and ongoing gaps: `FnTools.DesignTokens/LOGOS/naming.md`.
 
-**Fused compound segments** — two levels compressed into one camelCase segment, which
-causes capital letters to appear mid-name in the emitted CSS var:
+A rename batch was completed 2026-05-02. Key changes consumers should know:
 
-| Current CSS var | Current F# binding | Will become |
+| Old CSS var | New CSS var | F# binding |
 |---|---|---|
-| `--color-feedback-successSubtle` | `Tokens.Color.Feedback.SuccessSubtle` | `--color-feedback-success-subtle` / `Tokens.Color.Feedback.Success.Subtle` |
-| `--color-feedback-dangerSubtle` | `Tokens.Color.Feedback.DangerSubtle` | `--color-feedback-danger-subtle` / `Tokens.Color.Feedback.Danger.Subtle` |
-| `--color-feedback-infoSubtle` | `Tokens.Color.Feedback.InfoSubtle` | `--color-feedback-info-subtle` / `Tokens.Color.Feedback.Info.Subtle` |
-| `--shadow-focusRing` | `Tokens.Shadow.FocusRing` | `--shadow-focus-ring` / `Tokens.Shadow.FocusRing` (same F#) |
+| `--color-feedback-success` | `--color-feedback-success-default` | `Tokens.Color.Feedback.Success.Default` |
+| `--color-feedback-successSubtle` | `--color-feedback-success-subtle` | `Tokens.Color.Feedback.Success.Subtle` |
+| `--color-feedback-dangerSubtle` | `--color-feedback-danger-subtle` | `Tokens.Color.Feedback.Danger.Subtle` |
+| `--color-feedback-infoSubtle` | `--color-feedback-info-subtle` | `Tokens.Color.Feedback.Info.Subtle` |
+| `--shadow-focusRing` | `--shadow-focus-ring` | `Tokens.Shadow.FocusRing` (unchanged) |
+| `--font-lineHeight-*` | `--font-line-height-*` | `Tokens.Font.LineHeight.*` (unchanged) |
+| `--font-letterSpacing-*` | `--font-letter-spacing-*` | `Tokens.Font.LetterSpacing.*` (unchanged) |
 
-**camelCase property group names** — `lineHeight` and `letterSpacing` emit with capital
-letters in CSS var names, inconsistent with every other token:
-
-| Current CSS var | Will become |
-|---|---|
-| `--font-lineHeight-tight` | `--font-line-height-tight` |
-| `--font-letterSpacing-wide` | `--font-letter-spacing-wide` |
-
-F# bindings: `Tokens.Font.LineHeight.*` and `Tokens.Font.LetterSpacing.*` — names stay
-the same in F# (PascalCase is already correct); only the underlying CSS var changes.
-
-Do not work around these by using the raw CSS var strings in new code. Use the `Tokens.*`
-bindings so the rename is a single re-emit.
+Use `Tokens.*` bindings, not raw CSS var strings, so future renames require only a re-emit.
