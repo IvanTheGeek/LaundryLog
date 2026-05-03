@@ -71,12 +71,18 @@
       "on":      { "$value": { "colorSpace": "oklch", "components": [1.000, 0, 0] } }
     },
     "feedback": {
-      "success":       { "$value": "{color.green.N500}" },
-      "successSubtle": { "$value": "{color.green.N100}" },
-      "danger":        { "$value": "{color.red.N500}" },
-      "dangerSubtle":  { "$value": "{color.red.N100}" },
-      "info":          { "$value": "{color.blue.N500}" },
-      "infoSubtle":    { "$value": "{color.blue.N100}" }
+      "success": {
+        "default": { "$value": "{color.green.N500}" },
+        "subtle":  { "$value": "{color.green.N100}" }
+      },
+      "danger": {
+        "default": { "$value": "{color.red.N500}" },
+        "subtle":  { "$value": "{color.red.N100}" }
+      },
+      "info": {
+        "default": { "$value": "{color.blue.N500}" },
+        "subtle":  { "$value": "{color.blue.N100}" }
+      }
     }
   },
   "font": {
@@ -107,14 +113,14 @@
       "4xl":  { "$value": { "value": 3.0625, "unit": "rem" } },
       "5xl":  { "$value": { "value": 3.8125, "unit": "rem" } }
     },
-    "lineHeight": {
+    "line-height": {
       "$type": "number",
       "tight":   { "$value": 1.1 },
       "snug":    { "$value": 1.3 },
       "normal":  { "$value": 1.5 },
       "relaxed": { "$value": 1.7 }
     },
-    "letterSpacing": {
+    "letter-spacing": {
       "$type": "number",
       "tight":  { "$value": -0.02 },
       "normal": { "$value": 0 },
@@ -183,7 +189,7 @@
         { "color": { "colorSpace": "srgb", "components": [0, 0, 0], "alpha": 0.07 }, "offsetX": { "value": 0, "unit": "px" }, "offsetY": { "value": 4,  "unit": "px" }, "blur": { "value": 12, "unit": "px" }, "spread": { "value": 0, "unit": "px" } }
       ]
     },
-    "focusRing": {
+    "focus-ring": {
       "$value": {
         "color":   "{color.amber.N300}",
         "offsetX": { "value": 0, "unit": "px" },

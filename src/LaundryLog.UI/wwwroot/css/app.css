@@ -24,9 +24,9 @@ html, body {
     position: fixed;
     inset: auto 0 0;
     padding: 0.75rem 1.25rem;
-    background: var(--color-feedback-dangerSubtle, #fef2f2);
-    border-top: 2px solid var(--color-feedback-danger, #dc2626);
-    color: var(--color-feedback-danger, #dc2626);
+    background: var(--color-feedback-danger-subtle, #fef2f2);
+    border-top: 2px solid var(--color-feedback-danger-default, #dc2626);
+    color: var(--color-feedback-danger-default, #dc2626);
     font-size: var(--font-size-sm, 0.875rem);
     z-index: 1000;
 }
@@ -188,7 +188,7 @@ html, body {
 .ll-money-input:focus {
     outline: none;
     border-color: var(--color-accent-default);
-    box-shadow: var(--shadow-focusRing);
+    box-shadow: var(--shadow-focus-ring);
 }
 
 /* ════════════════════════════════════
@@ -276,7 +276,7 @@ html, body {
 
 /* ─ Text Input (shared — payment name, location) ─ */
 .ll-text-input { width: 100%; padding: var(--spacing-N3) var(--spacing-N4); border: 1.5px solid var(--color-border-default); border-radius: var(--radius-md); font-size: var(--font-size-base); font-weight: var(--font-weight-medium); color: var(--color-text-primary); background: var(--color-surface-raised); font-family: var(--font-family-body); transition: border-color var(--duration-fast); box-sizing: border-box; }
-.ll-text-input:focus { outline: none; border-color: var(--color-accent-default); box-shadow: var(--shadow-focusRing); }
+.ll-text-input:focus { outline: none; border-color: var(--color-accent-default); box-shadow: var(--shadow-focus-ring); }
 .ll-text-input::placeholder { color: var(--color-text-muted); }
 
 /* ─ Entry Total ─ */
@@ -320,14 +320,14 @@ html, body {
 
 /* ─ Entry Card ─ */
 .ll-entry-card { background: var(--color-surface-raised); border-radius: var(--radius-lg); padding: var(--spacing-N4); box-shadow: var(--shadow-xs); border: 1px solid var(--color-border-default); border-left: 3px solid var(--color-border-default); width: 100%; box-sizing: border-box; }
-.ll-entry-card--logged { border-left-color: var(--color-feedback-success); }
+.ll-entry-card--logged { border-left-color: var(--color-feedback-success-default); }
 .ll-entry-card__top { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-N1); }
 .ll-entry-card__amount { font-size: var(--font-size-xl); font-weight: var(--font-weight-bold); color: var(--color-text-primary); }
 .ll-entry-card__time { font-size: var(--font-size-xs); color: var(--color-text-muted); }
 .ll-entry-card__detail { font-size: var(--font-size-sm); color: var(--color-text-secondary); }
 
 /* ─ Feedback Banner ─ */
-.ll-feedback { background: var(--color-feedback-successSubtle); border: 1px solid var(--color-green-N500); color: var(--color-green-N700); border-radius: var(--radius-md); padding: var(--spacing-N3) var(--spacing-N4); font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); }
+.ll-feedback { background: var(--color-feedback-success-subtle); border: 1px solid var(--color-green-N500); color: var(--color-green-N700); border-radius: var(--radius-md); padding: var(--spacing-N3) var(--spacing-N4); font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); }
 
 [data-theme="dark"] .ll-feedback { background: oklch(0.16 0.05 145); border-color: var(--color-green-N500); color: var(--color-green-N500); }
 
