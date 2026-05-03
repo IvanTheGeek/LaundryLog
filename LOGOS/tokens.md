@@ -121,3 +121,34 @@ DTCG stores letter-spacing as a unitless number (e.g. `0.05`). The emitted CSS v
 (`--font-letterSpacing-wide: 0.05`) is unitless. CSS `letter-spacing` requires a unit,
 so use `0.05em` directly in stylesheets and inline styles — not `var(--font-letterSpacing-wide)`.
 This is a known limitation; the token definition will be revisited.
+
+## Known naming issues (pending rename)
+
+The following token names have structural problems identified in a naming review
+(ref: `FnTools.DesignTokens/LOGOS/naming.md`). They will be renamed in a future breaking
+commit before any external consumers are established. When that happens, `ll.css` and
+`Tokens.fs` will be re-emitted and all references in `app.css` and F# components updated.
+
+**Fused compound segments** — two levels compressed into one camelCase segment, which
+causes capital letters to appear mid-name in the emitted CSS var:
+
+| Current CSS var | Current F# binding | Will become |
+|---|---|---|
+| `--color-feedback-successSubtle` | `Tokens.Color.Feedback.SuccessSubtle` | `--color-feedback-success-subtle` / `Tokens.Color.Feedback.Success.Subtle` |
+| `--color-feedback-dangerSubtle` | `Tokens.Color.Feedback.DangerSubtle` | `--color-feedback-danger-subtle` / `Tokens.Color.Feedback.Danger.Subtle` |
+| `--color-feedback-infoSubtle` | `Tokens.Color.Feedback.InfoSubtle` | `--color-feedback-info-subtle` / `Tokens.Color.Feedback.Info.Subtle` |
+| `--shadow-focusRing` | `Tokens.Shadow.FocusRing` | `--shadow-focus-ring` / `Tokens.Shadow.FocusRing` (same F#) |
+
+**camelCase property group names** — `lineHeight` and `letterSpacing` emit with capital
+letters in CSS var names, inconsistent with every other token:
+
+| Current CSS var | Will become |
+|---|---|
+| `--font-lineHeight-tight` | `--font-line-height-tight` |
+| `--font-letterSpacing-wide` | `--font-letter-spacing-wide` |
+
+F# bindings: `Tokens.Font.LineHeight.*` and `Tokens.Font.LetterSpacing.*` — names stay
+the same in F# (PascalCase is already correct); only the underlying CSS var changes.
+
+Do not work around these by using the raw CSS var strings in new code. Use the `Tokens.*`
+bindings so the rename is a single re-emit.
